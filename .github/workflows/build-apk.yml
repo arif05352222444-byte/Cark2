@@ -1,0 +1,53 @@
+name: Build APK
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Proje klasörünü bul
+        run: |
+          F=$(find . -name settings.gradle.kts -not -path './.git/*' | head -1)
+          if [ -z "$F" ]; then
+            Z=$(find . -name '*.zip' -not -path './.git/*' | head -1)
+            if [ -n "$Z" ]; then
+              echo "ZIP bulundu: $Z"
+              unzip -q -o "$Z" -d _proje
+              F=$(find ./_proje -name settings.gradle.kts | head -1)
+            fi
+          fi
+          if [ -z "$F" ]; then
+            echo "::error::Proje dosyalari yok. Repoya AileCarkiTV_final.zip yukleyin."
+            ls -la
+            exit 1
+          fi
+          D=$(dirname "$F")
+          echo "Proje klasoru: $D"
+          echo "PROJECT_DIR=$D" >> $GITHUB_ENV
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+
+      - name: Unit testler
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: gradle testDebugUnitTest --stacktrace
+
+      - name: Debug APK derle
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: gradle assembleDebug --stacktrace
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AileCarki-debug-apk
+          path: ${{ env.PROJECT_DIR }}/app/build/outputs/apk/debug/app-debug.apk
