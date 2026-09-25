@@ -1,0 +1,308 @@
+[
+  {
+    "file": "voice_welcome.mp3",
+    "text": "Aile Çarkı'na hoş geldiniz!",
+    "language": "tr-TR",
+    "duration_seconds": 1.75
+  },
+  {
+    "file": "voice_game_start.mp3",
+    "text": "Hazırsanız, oyun başlasın!",
+    "language": "tr-TR",
+    "duration_seconds": 2.038
+  },
+  {
+    "file": "voice_your_turn.mp3",
+    "text": "Sıra sende!",
+    "language": "tr-TR",
+    "duration_seconds": 1.097
+  },
+  {
+    "file": "voice_spin.mp3",
+    "text": "Çarkı çevir!",
+    "language": "tr-TR",
+    "duration_seconds": 1.149
+  },
+  {
+    "file": "voice_wheel_spinning.mp3",
+    "text": "Ve çark dönüyor!",
+    "language": "tr-TR",
+    "duration_seconds": 1.254
+  },
+  {
+    "file": "voice_choose_letter.mp3",
+    "text": "Bir harf seç.",
+    "language": "tr-TR",
+    "duration_seconds": 1.202
+  },
+  {
+    "file": "voice_buy_vowel.mp3",
+    "text": "Bir sesli harf seç.",
+    "language": "tr-TR",
+    "duration_seconds": 1.567
+  },
+  {
+    "file": "voice_check_letter.mp3",
+    "text": "Bakalım bu harften var mı?",
+    "language": "tr-TR",
+    "duration_seconds": 1.567
+  },
+  {
+    "file": "voice_letter_missing.mp3",
+    "text": "Maalesef, bu harften yok.",
+    "language": "tr-TR",
+    "duration_seconds": 1.62
+  },
+  {
+    "file": "voice_one_letter.mp3",
+    "text": "Bir tane var!",
+    "language": "tr-TR",
+    "duration_seconds": 1.149
+  },
+  {
+    "file": "voice_two_letters.mp3",
+    "text": "İki tane var!",
+    "language": "tr-TR",
+    "duration_seconds": 1.019
+  },
+  {
+    "file": "voice_three_letters.mp3",
+    "text": "Üç tane var!",
+    "language": "tr-TR",
+    "duration_seconds": 0.914
+  },
+  {
+    "file": "voice_four_letters.mp3",
+    "text": "Dört tane var!",
+    "language": "tr-TR",
+    "duration_seconds": 1.149
+  },
+  {
+    "file": "voice_five_letters.mp3",
+    "text": "Beş tane var!",
+    "language": "tr-TR",
+    "duration_seconds": 1.097
+  },
+  {
+    "file": "voice_continue.mp3",
+    "text": "Güzel! Devam edebilirsin.",
+    "language": "tr-TR",
+    "duration_seconds": 1.62
+  },
+  {
+    "file": "voice_pass.mp3",
+    "text": "Sıra geçiyor!",
+    "language": "tr-TR",
+    "duration_seconds": 1.28
+  },
+  {
+    "file": "voice_bankrupt.mp3",
+    "text": "Eyvah! İflas!",
+    "language": "tr-TR",
+    "duration_seconds": 1.437
+  },
+  {
+    "file": "voice_joker.mp3",
+    "text": "Joker!",
+    "language": "tr-TR",
+    "duration_seconds": 0.836
+  },
+  {
+    "file": "voice_double.mp3",
+    "text": "İki kat puan!",
+    "language": "tr-TR",
+    "duration_seconds": 1.28
+  },
+  {
+    "file": "voice_solve.mp3",
+    "text": "Cevabın nedir?",
+    "language": "tr-TR",
+    "duration_seconds": 1.332
+  },
+  {
+    "file": "voice_correct.mp3",
+    "text": "Doğru cevap!",
+    "language": "tr-TR",
+    "duration_seconds": 1.097
+  },
+  {
+    "file": "voice_wrong.mp3",
+    "text": "Maalesef, yanlış cevap.",
+    "language": "tr-TR",
+    "duration_seconds": 1.672
+  },
+  {
+    "file": "voice_great.mp3",
+    "text": "Harika!",
+    "language": "tr-TR",
+    "duration_seconds": 0.862
+  },
+  {
+    "file": "voice_congrats.mp3",
+    "text": "Tebrikler!",
+    "language": "tr-TR",
+    "duration_seconds": 1.071
+  },
+  {
+    "file": "voice_round_complete.mp3",
+    "text": "Tur tamamlandı!",
+    "language": "tr-TR",
+    "duration_seconds": 1.149
+  },
+  {
+    "file": "voice_round_winner.mp3",
+    "text": "Bu turun kazananı belli oldu!",
+    "language": "tr-TR",
+    "duration_seconds": 1.75
+  },
+  {
+    "file": "voice_next_round.mp3",
+    "text": "Yeni tura geçiyoruz!",
+    "language": "tr-TR",
+    "duration_seconds": 1.384
+  },
+  {
+    "file": "voice_final.mp3",
+    "text": "Final turuna hoş geldiniz!",
+    "language": "tr-TR",
+    "duration_seconds": 1.437
+  },
+  {
+    "file": "voice_final_letters.mp3",
+    "text": "Final için harflerini seç.",
+    "language": "tr-TR",
+    "duration_seconds": 1.698
+  },
+  {
+    "file": "voice_get_ready.mp3",
+    "text": "Hazırlan!",
+    "language": "tr-TR",
+    "duration_seconds": 1.071
+  },
+  {
+    "file": "voice_timer_start.mp3",
+    "text": "Ve süre başlıyor!",
+    "language": "tr-TR",
+    "duration_seconds": 1.28
+  },
+  {
+    "file": "voice_five_seconds.mp3",
+    "text": "Son beş saniye!",
+    "language": "tr-TR",
+    "duration_seconds": 1.437
+  },
+  {
+    "file": "voice_time_up.mp3",
+    "text": "Süre bitti!",
+    "language": "tr-TR",
+    "duration_seconds": 1.019
+  },
+  {
+    "file": "voice_final_correct.mp3",
+    "text": "Muhteşem! Doğru cevap!",
+    "language": "tr-TR",
+    "duration_seconds": 1.698
+  },
+  {
+    "file": "voice_final_wrong.mp3",
+    "text": "Bu kez olmadı.",
+    "language": "tr-TR",
+    "duration_seconds": 1.202
+  },
+  {
+    "file": "voice_game_over.mp3",
+    "text": "Aile Çarkı sona erdi.",
+    "language": "tr-TR",
+    "duration_seconds": 1.672
+  },
+  {
+    "file": "voice_thanks.mp3",
+    "text": "Oynadığınız için teşekkürler!",
+    "language": "tr-TR",
+    "duration_seconds": 1.672
+  },
+  {
+    "file": "voice_play_again.mp3",
+    "text": "Bir tur daha?",
+    "language": "tr-TR",
+    "duration_seconds": 1.28
+  },
+  {
+    "file": "voice_already_selected.mp3",
+    "text": "Bu harf daha önce seçildi.",
+    "language": "tr-TR",
+    "duration_seconds": 1.698
+  },
+  {
+    "file": "voice_too_close.mp3",
+    "text": "Çok yaklaştın!",
+    "language": "tr-TR",
+    "duration_seconds": 1.149
+  },
+  {
+    "file": "voice_perfect.mp3",
+    "text": "Mükemmel!",
+    "language": "tr-TR",
+    "duration_seconds": 0.967
+  },
+  {
+    "file": "voice_100_points.mp3",
+    "text": "Yüz puan!",
+    "language": "tr-TR",
+    "duration_seconds": 1.019
+  },
+  {
+    "file": "voice_200_points.mp3",
+    "text": "İki yüz puan!",
+    "language": "tr-TR",
+    "duration_seconds": 1.202
+  },
+  {
+    "file": "voice_250_points.mp3",
+    "text": "İki yüz elli puan!",
+    "language": "tr-TR",
+    "duration_seconds": 1.332
+  },
+  {
+    "file": "voice_300_points.mp3",
+    "text": "Üç yüz puan!",
+    "language": "tr-TR",
+    "duration_seconds": 1.202
+  },
+  {
+    "file": "voice_400_points.mp3",
+    "text": "Dört yüz puan!",
+    "language": "tr-TR",
+    "duration_seconds": 1.202
+  },
+  {
+    "file": "voice_500_points.mp3",
+    "text": "Beş yüz puan!",
+    "language": "tr-TR",
+    "duration_seconds": 1.202
+  },
+  {
+    "file": "voice_750_points.mp3",
+    "text": "Yedi yüz elli puan!",
+    "language": "tr-TR",
+    "duration_seconds": 1.489
+  },
+  {
+    "file": "voice_1000_points.mp3",
+    "text": "Bin puan!",
+    "language": "tr-TR",
+    "duration_seconds": 0.914
+  },
+  {
+    "file": "voice_1500_points.mp3",
+    "text": "Bin beş yüz puan!",
+    "language": "tr-TR",
+    "duration_seconds": 1.28
+  },
+  {
+    "file": "voice_2000_points.mp3",
+    "text": "İki bin puan!",
+    "language": "tr-TR",
+    "duration_seconds": 1.149
+  }
+]

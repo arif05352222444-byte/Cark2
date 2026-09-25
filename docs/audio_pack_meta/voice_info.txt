@@ -1,0 +1,14 @@
+Voice Name:
+Aile Çarkı Sunucusu
+
+Voice ID:
+TWUsX2Dsrl6Po7HWFhWW
+
+Language:
+Turkish
+
+Provider:
+ElevenLabs
+
+API KEY:
+NOT INCLUDED

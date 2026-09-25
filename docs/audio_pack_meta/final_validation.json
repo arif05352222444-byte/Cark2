@@ -1,0 +1,20 @@
+{
+  "status": "PASS",
+  "errors": [],
+  "counts": {
+    "speech": 51,
+    "effects": 22,
+    "music": 3
+  },
+  "total_mp3": 76,
+  "sound_id_count": 28,
+  "manifest_key_count": 28,
+  "project_audio_files_copied": 28,
+  "backup": "C:\\Users\\Superuser\\Desktop\\AileCarkiTV_final_backup_20260925.zip",
+  "backup_sha256": "646006150fbacf98e3286bf1434c07296c3ed02d5a8414552d1bde88631145ed",
+  "build": {
+    "tests": "NOT RUN - compatible JDK and Android SDK are not installed",
+    "apk": "NOT BUILT - compatible JDK and Android SDK are not installed",
+    "source_changes": "Audio assets only; GameEngine, UI and rules unchanged"
+  }
+}

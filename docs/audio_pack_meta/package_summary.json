@@ -1,0 +1,20 @@
+{
+  "voice_name": "Aile Çarkı Sunucusu",
+  "voice_id": "TWUsX2Dsrl6Po7HWFhWW",
+  "provider": "ElevenLabs",
+  "language": "Turkish",
+  "counts": {
+    "speech": 51,
+    "effects": 22,
+    "music": 3,
+    "total_mp3": 76
+  },
+  "dynamic_tts_templates": 10,
+  "project_semantic_ids": 28,
+  "api_key_included": false,
+  "qc": {
+    "passed": 76,
+    "failed": 0,
+    "report": "audio_qc_report.json"
+  }
+}

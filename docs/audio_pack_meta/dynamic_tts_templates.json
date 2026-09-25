@@ -1,0 +1,12 @@
+{
+  "player_turn": "{player}, sıra sende. Çarkı çevir!",
+  "points_letter": "{player}, {points} puan için bir harf seç.",
+  "letter_selected": "{letter} harfi... bakalım.",
+  "letter_found": "{count} tane {letter} harfi var. {earned} puan kazandın!",
+  "letter_missing": "Maalesef, {letter} harfi yok. Sıra {nextPlayer}'da.",
+  "solve": "{player}, cevabın nedir?",
+  "round_winner": "Doğru cevap, {player}! Bu tur senin.",
+  "bankrupt": "{player}, maalesef iflas!",
+  "final_player": "{player}, final turuna hoş geldin!",
+  "game_winner": "Tebrikler {player}! Oyunun kazananı sensin!"
+}

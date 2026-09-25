@@ -1,0 +1,138 @@
+[
+  {
+    "file": "effect_ui_move.mp3",
+    "prompt": "Extremely short polished television game show interface navigation tick, subtle digital click, premium TV UI, no voice, under 200 milliseconds.",
+    "spoken_voice": false,
+    "duration_seconds": 0.192
+  },
+  {
+    "file": "effect_ui_select.mp3",
+    "prompt": "Short premium television interface confirm sound, soft click with a bright elegant chime, no voice.",
+    "spoken_voice": false,
+    "duration_seconds": 0.744
+  },
+  {
+    "file": "effect_wheel_tick.mp3",
+    "prompt": "Very short crisp mechanical television game-show prize wheel pointer tick, tactile plastic-on-metal click, clean and punchy, absolutely no music, no voice, under 150 milliseconds.",
+    "spoken_voice": false,
+    "duration_seconds": 0.144
+  },
+  {
+    "file": "effect_wheel_stop.mp3",
+    "prompt": "Short premium game-show prize wheel landing sound, satisfying bright chime with subtle impact, exciting, television production quality, no voice.",
+    "spoken_voice": false,
+    "duration_seconds": 1.248
+  },
+  {
+    "file": "effect_letter_reveal.mp3",
+    "prompt": "Very short premium TV word-puzzle tile reveal sound, soft mechanical flip followed by tiny sparkle, no voice, under half a second.",
+    "spoken_voice": false,
+    "duration_seconds": 0.528
+  },
+  {
+    "file": "effect_letter_correct.mp3",
+    "prompt": "Short cheerful premium television game-show correct-letter sparkle chime, bright and rewarding, no voice, under one second.",
+    "spoken_voice": false,
+    "duration_seconds": 0.864
+  },
+  {
+    "file": "effect_letter_wrong.mp3",
+    "prompt": "Short soft television game-show incorrect-letter buzzer, playful and friendly rather than harsh, no voice, under one second.",
+    "spoken_voice": false,
+    "duration_seconds": 0.864
+  },
+  {
+    "file": "effect_score_add.mp3",
+    "prompt": "Short premium television score increase sound, ascending clean digital notes, positive, no voice, under one second.",
+    "spoken_voice": false,
+    "duration_seconds": 0.864
+  },
+  {
+    "file": "effect_bankrupt.mp3",
+    "prompt": "Dramatic but playful family game-show bankrupt sting, fast descending musical hit, humorous disappointment, polished television production, no voice, around one and a half seconds.",
+    "spoken_voice": false,
+    "duration_seconds": 1.536
+  },
+  {
+    "file": "effect_pass.mp3",
+    "prompt": "Short family television game-show turn-pass transition, elegant whoosh with a light chime, no voice.",
+    "spoken_voice": false,
+    "duration_seconds": 1.056
+  },
+  {
+    "file": "effect_joker.mp3",
+    "prompt": "Bright magical premium television game-show joker reveal sting, golden sparkling feeling, exciting, no voice, around one second.",
+    "spoken_voice": false,
+    "duration_seconds": 1.056
+  },
+  {
+    "file": "effect_double.mp3",
+    "prompt": "Energetic premium television game-show double-points power-up sound, quick rising sparkle and punch, no voice.",
+    "spoken_voice": false,
+    "duration_seconds": 1.056
+  },
+  {
+    "file": "effect_round_win.mp3",
+    "prompt": "Short original upbeat family television game-show victory fanfare, celebratory brass and sparkle, premium broadcast quality, no voice, around three seconds.",
+    "spoken_voice": false,
+    "duration_seconds": 3.048
+  },
+  {
+    "file": "effect_applause_short.mp3",
+    "prompt": "Short warm television studio audience applause, family game-show atmosphere, natural crowd, no individual speech, around two seconds.",
+    "spoken_voice": false,
+    "duration_seconds": 2.064
+  },
+  {
+    "file": "effect_applause_big.mp3",
+    "prompt": "Enthusiastic television studio audience applause and cheers for a big game-show win, natural audience, no intelligible speech, around five seconds.",
+    "spoken_voice": false,
+    "duration_seconds": 5.064
+  },
+  {
+    "file": "effect_final_intro.mp3",
+    "prompt": "Original dramatic family television game-show final round sting, suspenseful rise ending in confident hit, premium broadcast production, no voice, around four seconds.",
+    "spoken_voice": false,
+    "duration_seconds": 4.056
+  },
+  {
+    "file": "effect_countdown.mp3",
+    "prompt": "Short suspenseful television game-show timer warning pulse, clean and urgent but family friendly, no voice.",
+    "spoken_voice": false,
+    "duration_seconds": 1.056
+  },
+  {
+    "file": "effect_final_win.mp3",
+    "prompt": "Big joyful original television game-show championship fanfare, triumphant brass, percussion and sparkle, premium broadcast quality, no voice, around six seconds.",
+    "spoken_voice": false,
+    "duration_seconds": 6.048
+  },
+  {
+    "file": "effect_wheel_spin.mp3",
+    "prompt": "Short sequence of crisp mechanical television game-show prize wheel pointer ticks that accelerates then settles, tactile plastic-on-metal clicks, clean and punchy, no music, no voice, around three seconds.",
+    "reason": "required_by_project_soundid",
+    "spoken_voice": false,
+    "duration_seconds": 3.048
+  },
+  {
+    "file": "effect_timeout.mp3",
+    "prompt": "Short friendly family television game-show time-up sting, clear ending cue, polished broadcast quality, no voice, under one second.",
+    "reason": "required_by_project_soundid",
+    "spoken_voice": false,
+    "duration_seconds": 0.864
+  },
+  {
+    "file": "effect_ui_back.mp3",
+    "prompt": "Very short premium television interface back navigation sound, subtle soft descending click, no voice, under half a second.",
+    "reason": "required_by_project_soundid",
+    "spoken_voice": false,
+    "duration_seconds": 0.528
+  },
+  {
+    "file": "effect_ui_disabled.mp3",
+    "prompt": "Very short soft television interface disabled action sound, muted friendly click, no voice, under half a second.",
+    "reason": "required_by_project_soundid",
+    "spoken_voice": false,
+    "duration_seconds": 0.528
+  }
+]

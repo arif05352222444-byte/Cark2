@@ -1,0 +1,20 @@
+[
+  {
+    "file": "music_game_loop.mp3",
+    "prompt": "Original upbeat family television game-show background music, modern orchestral pop, playful rhythm, light percussion, warm brass and subtle synths, energetic but unobtrusive underneath a presenter voice, no vocals, designed to loop.",
+    "instrumental": true,
+    "duration_seconds": 60.029
+  },
+  {
+    "file": "music_thinking_loop.mp3",
+    "prompt": "Original light suspense background music for a family TV word puzzle, playful ticking pulse, subtle orchestral and synth tension, no vocals, designed for seamless looping underneath speech.",
+    "instrumental": true,
+    "duration_seconds": 30.041
+  },
+  {
+    "file": "music_final_loop.mp3",
+    "prompt": "Original exciting television game-show final round background music, steadily building suspense, rhythmic timer feeling, family friendly, no vocals, suitable underneath presenter speech, designed to loop.",
+    "instrumental": true,
+    "duration_seconds": 30.041
+  }
+]

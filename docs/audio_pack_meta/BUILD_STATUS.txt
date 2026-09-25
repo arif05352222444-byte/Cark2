@@ -1,0 +1,5 @@
+TESTS: NOT RUN
+APK: NOT BUILT
+
+Reason:
+The computer has only 32-bit Java 8 and no Android SDK. Gradle 8.9 requires a compatible modern JDK, and the Android build requires an installed SDK. Audio assets were validated independently and copied without changing GameEngine, UI, or game rules.
