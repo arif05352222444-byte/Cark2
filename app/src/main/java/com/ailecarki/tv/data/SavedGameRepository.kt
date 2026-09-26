@@ -23,6 +23,7 @@ data class SavedGame(
     val version: Int = 1,
     val players: List<SavedPlayer>,
     val currentPlayerIndex: Int,
+    val startingPlayerIndex: Int = 0,
     val round: Int,
     val totalRounds: Int,
     val puzzleId: String,
@@ -68,6 +69,7 @@ class SavedGameRepository(private val store: DataStore<Preferences>) {
     private fun GameState.toSaved() = SavedGame(
         players = players.map { SavedPlayer(it.name, it.score, it.roundScore, it.roundsWon) },
         currentPlayerIndex = currentPlayerIndex,
+        startingPlayerIndex = startingPlayerIndex,
         round = round,
         totalRounds = totalRounds,
         puzzleId = puzzle.id,
@@ -90,6 +92,7 @@ class SavedGameRepository(private val store: DataStore<Preferences>) {
     private fun SavedGame.toState() = GameState(
         players = players.map { Player(it.name, it.score, it.roundScore, it.roundsWon) },
         currentPlayerIndex = currentPlayerIndex,
+        startingPlayerIndex = startingPlayerIndex,
         round = round,
         totalRounds = totalRounds,
         puzzle = Puzzle(puzzleId, puzzleCategory, puzzleAnswer),
