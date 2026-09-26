@@ -70,6 +70,8 @@ import com.ailecarki.tv.ui.theme.Dimens
 import com.ailecarki.tv.ui.theme.formatScore
 import com.ailecarki.tv.ui.viewmodel.GameViewModel
 import kotlinx.coroutines.delay
+import com.ailecarki.tv.ui.components.GameIcon
+import com.ailecarki.tv.ui.components.locativeName
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -153,6 +155,28 @@ private fun MainGameContent(s: GameState, vm: GameViewModel, refocusKey: Any?) {
     // Çarkın açısı turlar arasında korunur (çark kaldığı yerden döner).
     val rotation = remember { Animatable(-7.5f) }
     var keyboardFocusNonce by remember { mutableIntStateOf(0) }
+
+    // Yeni oyun: "ilk sıra kimde" çekilişi — kartlar arasında hızla dolaşan ışık, sonra seçilen oyuncu.
+    val intro by vm.startIntro.collectAsStateWithLifecycle()
+    var introHighlight by remember { mutableStateOf<Int?>(null) }
+    var introBanner by remember { mutableStateOf(false) }
+    LaunchedEffect(intro) {
+        if (!intro) return@LaunchedEffect
+        val n = s.players.size
+        val target = s.currentPlayerIndex
+        val steps = n * 3 + target
+        for (i in 0..steps) {
+            introHighlight = i % n
+            vm.introTick()
+            val t = i.toFloat() / steps
+            delay((55 + 220 * t * t).toLong())
+        }
+        introHighlight = null
+        introBanner = true
+        delay(1700)
+        introBanner = false
+        vm.finishStartIntro()
+    }
 
     // Çevirme animasyonu: sonuç engine tarafından önceden belirlendi, animasyon onu gösterir.
     LaunchedEffect(s.spinCount) {
@@ -270,14 +294,14 @@ private fun MainGameContent(s: GameState, vm: GameViewModel, refocusKey: Any?) {
             Modifier.offset(x = screenW - padH - rightW, y = colTop - 6.dp).width(rightW),
             verticalArrangement = Arrangement.spacedBy(9.dp),
         ) {
-            ActionColumn(s, vm, refocusKey, onLetterClick = { keyboardFocusNonce += 1 })
+            ActionColumn(s, vm, refocusKey, locked = intro, onLetterClick = { keyboardFocusNonce += 1 })
             if (!keyboardUp) RemoteHelpPanel(Modifier.fillMaxWidth(), compact = true)
         }
 
         // Alt: SIRA SENDE + oyuncu kartları
         PlayerScoreRow(
             s.players,
-            s.currentPlayerIndex,
+            introHighlight ?: s.currentPlayerIndex,
             Modifier.offset(x = padH, y = cardsTop).width(screenW - padH * 2).height(cardsH),
             doubleActive = s.doubleActive,
             showTurnBadge = true,
@@ -325,36 +349,80 @@ private fun MainGameContent(s: GameState, vm: GameViewModel, refocusKey: Any?) {
         }
 
         EventBanner(s, Modifier.zIndex(6f))
+
+        // Çözüm sırasında: bulmaca görünür kalır, üstünde kısa bir çağrı.
+        AnimatedVisibility(
+            visible = s.phase == GamePhase.SOLVING,
+            modifier = Modifier.offset(x = centerX, y = cardsTop - 58.dp).width(centerW).zIndex(5f),
+            enter = fadeIn(tween(200)) + scaleIn(tween(220), initialScale = 0.8f),
+            exit = fadeOut(tween(150)),
+        ) {
+            Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                GoldCapsule {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        GameIcon(GameIconKind.MIC, AppColors.Gold, size = 22.dp)
+                        Spacer(Modifier.width(8.dp))
+                        GoldText(stringResource(R.string.solving_banner, s.currentPlayer.name), 22.sp)
+                    }
+                }
+            }
+        }
+
+        AnimatedVisibility(
+            visible = introBanner,
+            modifier = Modifier.align(Alignment.Center).zIndex(7f),
+            enter = fadeIn(tween(150)) + scaleIn(tween(240), initialScale = 0.6f),
+            exit = fadeOut(tween(200)),
+        ) {
+            BannerCard(
+                title = stringResource(R.string.first_turn_title),
+                subtitle = locativeName(s.currentPlayer.name) + "!",
+                accent = AppColors.Gold,
+            )
+        }
     }
 
     if (s.phase == GamePhase.SOLVING) {
-        TextInputDialog(
-            title = stringResource(R.string.solve_title),
-            subtitle = s.currentPlayer.name,
-            initial = "",
-            maxLength = 40,
-            allowSpace = true,
-            onConfirm = vm::submitSolve,
-            onDismiss = vm::cancelSolve,
-        )
+        // Varsayılan: sesli söyle + hakem. Yazarak giriş yalnızca yedek.
+        var typing by remember(s.eventCounter) { mutableStateOf(false) }
+        if (typing) {
+            TextInputDialog(
+                title = stringResource(R.string.solve_title),
+                subtitle = s.currentPlayer.name,
+                initial = "",
+                maxLength = 40,
+                allowSpace = true,
+                onConfirm = vm::submitSolve,
+                onDismiss = { typing = false },
+            )
+        } else {
+            RefereeSolveDialog(
+                playerName = s.currentPlayer.name,
+                answer = s.puzzle.answer,
+                onCorrect = { vm.confirmSolve(true) },
+                onWrong = { vm.confirmSolve(false) },
+                onType = { typing = true },
+                onDismiss = vm::cancelSolve,
+            )
+        }
     }
 
     if (s.phase == GamePhase.ROUND_COMPLETE) RoundCompleteDialog(s, vm)
 }
 
 @Composable
-private fun ActionColumn(s: GameState, vm: GameViewModel, refocusKey: Any?, onLetterClick: () -> Unit) {
+private fun ActionColumn(s: GameState, vm: GameViewModel, refocusKey: Any?, locked: Boolean, onLetterClick: () -> Unit) {
     val spin = remember { FocusRequester() }
     val solve = remember { FocusRequester() }
-    val canSpin = vm.canSpin()
+    val canSpin = vm.canSpin() && !locked
     if (s.phase in ACTION_PHASES) {
-        RequestFocus(if (canSpin) spin else solve, s.phase, s.currentPlayerIndex, s.eventCounter, refocusKey)
+        RequestFocus(if (canSpin || locked) spin else solve, s.phase, s.currentPlayerIndex, s.eventCounter, refocusKey, locked)
     }
     val w = Modifier.fillMaxWidth()
     TvButton(stringResource(R.string.action_spin), vm::spin, w, enabled = canSpin, focusRequester = spin, height = 48.dp, fontSize = 19.sp, icon = GameIconKind.WHEEL, alignStart = true)
     TvButton(stringResource(R.string.action_letter), onLetterClick, w, enabled = s.phase in SELECTION_PHASES, height = 48.dp, fontSize = 19.sp, icon = GameIconKind.KEYBOARD, alignStart = true)
-    TvButton(stringResource(R.string.action_vowel_short), vm::buyVowel, w, enabled = vm.canBuyVowel(), height = 48.dp, fontSize = 19.sp, icon = GameIconKind.BULB, alignStart = true)
-    TvButton(stringResource(R.string.action_solve), vm::startSolve, w, enabled = vm.canSolve(), focusRequester = solve, height = 48.dp, fontSize = 19.sp, icon = GameIconKind.CHECK, alignStart = true)
+    TvButton(stringResource(R.string.action_vowel_short), vm::buyVowel, w, enabled = vm.canBuyVowel() && !locked, height = 48.dp, fontSize = 19.sp, icon = GameIconKind.BULB, alignStart = true)
+    TvButton(stringResource(R.string.action_solve), vm::startSolve, w, enabled = vm.canSolve() && !locked, focusRequester = solve, height = 48.dp, fontSize = 19.sp, icon = GameIconKind.CHECK, alignStart = true)
 }
 
 @Composable

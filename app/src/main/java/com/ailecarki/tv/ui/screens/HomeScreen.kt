@@ -47,9 +47,9 @@ fun HomeScreen(
     BoxWithConstraints(Modifier.fillMaxSize()) {
         val padH = maxWidth * 0.035f
         val padV = maxHeight * 0.035f
-        val wheel = (maxHeight * 0.62f)
+        val wheel = (maxHeight * 0.70f)
         // Sol: büyük dekoratif çark + kaide
-        Box(Modifier.offset(x = padH, y = maxHeight * 0.2f)) {
+        Box(Modifier.offset(x = padH - 8.dp, y = maxHeight * 0.16f)) {
             WheelPodium(wheel * 1.05f, Modifier.offset(x = -(wheel * 0.025f), y = wheel * 0.9f))
             WheelView(WheelConfig.DEFAULT, rotation = { -7.5f }, size = wheel)
         }
@@ -58,7 +58,7 @@ fun HomeScreen(
             Modifier.align(Alignment.TopCenter).padding(top = padV),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            TitleMarquee(stringResource(R.string.title), fontSize = 50.sp)
+            TitleMarquee(stringResource(R.string.title), fontSize = 56.sp)
             Spacer(Modifier.height(10.dp))
             Text(
                 stringResource(R.string.slogan),
@@ -84,8 +84,8 @@ fun HomeScreen(
         }
         // Alt şerit
         Row(
-            Modifier.align(Alignment.BottomCenter).padding(bottom = padV),
-            horizontalArrangement = Arrangement.spacedBy(36.dp),
+            Modifier.align(Alignment.BottomCenter).padding(bottom = padV * 0.6f),
+            horizontalArrangement = Arrangement.spacedBy(28.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             FooterItem(GameIconKind.PERSON, stringResource(R.string.footer_1))
@@ -98,8 +98,8 @@ fun HomeScreen(
 @Composable
 private fun FooterItem(icon: GameIconKind, text: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        GameIcon(icon, AppColors.TextMuted, size = 20.dp)
+        GameIcon(icon, AppColors.TextMuted.copy(alpha = 0.8f), size = 15.dp)
         Spacer(Modifier.width(8.dp))
-        Text(text, color = AppColors.TextMuted, fontSize = 15.sp, fontWeight = FontWeight.Medium)
+        Text(text, color = AppColors.TextMuted.copy(alpha = 0.85f), fontSize = 12.sp, fontWeight = FontWeight.Medium)
     }
 }

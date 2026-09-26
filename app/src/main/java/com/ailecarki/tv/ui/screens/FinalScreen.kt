@@ -114,15 +114,28 @@ fun FinalScreen(s: GameState, vm: GameViewModel, refocusKey: Any? = null) {
     }
 
     if (s.phase == GamePhase.FINAL_SOLVING && showInput) {
-        TextInputDialog(
-            title = stringResource(R.string.solve_title),
-            subtitle = stringResource(R.string.final_time_left, secondsLeft),
-            initial = "",
-            maxLength = 40,
-            allowSpace = true,
-            onConfirm = { vm.submitFinal(it) },
-            onDismiss = { showInput = false },
-        )
+        var typing by remember { mutableStateOf(false) }
+        if (typing) {
+            TextInputDialog(
+                title = stringResource(R.string.solve_title),
+                subtitle = stringResource(R.string.final_time_left, secondsLeft),
+                initial = "",
+                maxLength = 40,
+                allowSpace = true,
+                onConfirm = { vm.submitFinal(it) },
+                onDismiss = { typing = false },
+            )
+        } else {
+            RefereeSolveDialog(
+                playerName = finalist.name,
+                answer = s.puzzle.answer,
+                onCorrect = { vm.confirmFinal(true) },
+                onWrong = { vm.confirmFinal(false) },
+                onType = { typing = true },
+                onDismiss = { showInput = false },
+                secondsLeft = secondsLeft,
+            )
+        }
     }
 }
 

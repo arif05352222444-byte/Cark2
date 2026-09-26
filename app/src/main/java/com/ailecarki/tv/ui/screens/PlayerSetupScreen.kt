@@ -72,14 +72,20 @@ fun PlayerSetupScreen(vm: GameViewModel, onBack: () -> Unit, onStarted: () -> Un
     var editing by remember { mutableStateOf<Int?>(null) }
     var triedStart by remember { mutableStateOf(false) }
     val rowRequesters = remember { List(6) { FocusRequester() } }
+    val countRequesters = remember { List(3) { FocusRequester() } }
     var lastEdited by remember { mutableIntStateOf(0) }
+    var hasEdited by remember { mutableStateOf(false) }
     BackHandler { onBack() }
 
     // İlk açılışta ve isim diyaloğu kapanınca odak düzenlenen satıra döner.
+    // İlk açılışta odak oyuncu sayısı seçicide; isim diyaloğu kapanınca düzenlenen satıra döner.
     LaunchedEffect(editing == null) {
         if (editing == null && names.isNotEmpty()) {
             delay(80)
-            runCatching { rowRequesters[lastEdited.coerceIn(0, names.size - 1)].requestFocus() }
+            runCatching {
+                if (hasEdited) rowRequesters[lastEdited.coerceIn(0, names.size - 1)].requestFocus()
+                else countRequesters[(names.size - 2).coerceIn(0, 2)].requestFocus()
+            }
         }
     }
     LaunchedEffect(names) { if (vm.namesValid()) triedStart = false }
@@ -110,9 +116,23 @@ fun PlayerSetupScreen(vm: GameViewModel, onBack: () -> Unit, onStarted: () -> Un
             verticalArrangement = Arrangement.spacedBy(7.dp),
         ) {
             Text(stringResource(R.string.setup_title), style = goldTextStyle(30.sp))
-            Text(stringResource(R.string.setup_subtitle), color = Color(0xFFDCE6FF), fontSize = 14.sp, fontStyle = FontStyle.Italic)
+            // Oyuncu sayısı: 2 / 3 / 4
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                for (n in 2..4) {
+                    TvButton(
+                        stringResource(R.string.setup_count, n),
+                        onClick = { vm.setPlayerCount(n) },
+                        modifier = Modifier.width(118.dp),
+                        primary = names.size == n,
+                        focusRequester = countRequesters[n - 2],
+                        height = 38.dp,
+                        fontSize = 16.sp,
+                        corner = 12.dp,
+                    )
+                }
+            }
             names.forEachIndexed { i, name ->
-                NameRow(i, name, rowRequesters[i]) { lastEdited = i; editing = i }
+                NameRow(i, name, rowRequesters[i]) { lastEdited = i; hasEdited = true; editing = i }
             }
         }
 
@@ -127,13 +147,9 @@ fun PlayerSetupScreen(vm: GameViewModel, onBack: () -> Unit, onStarted: () -> Un
         Row(
             Modifier
                 .align(Alignment.TopCenter)
-                .offset(y = h * 0.745f),
+                .offset(y = h * 0.76f),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            TvButton(
-                stringResource(R.string.setup_add), vm::addPlayer, Modifier.width(230.dp),
-                enabled = names.size < vm.rules.maxPlayers, height = 54.dp, fontSize = 20.sp, icon = GameIconKind.PLUS,
-            )
             TvButton(stringResource(R.string.setup_random), vm::fillRandomNames, Modifier.width(230.dp), height = 54.dp, fontSize = 20.sp, icon = GameIconKind.SHUFFLE)
             TvButton(
                 stringResource(R.string.setup_start),
@@ -154,7 +170,6 @@ fun PlayerSetupScreen(vm: GameViewModel, onBack: () -> Unit, onStarted: () -> Un
 
         val warning = when {
             vm.hasDuplicateNames() -> stringResource(R.string.setup_duplicate_warning)
-            triedStart && !vm.namesValid() -> stringResource(R.string.setup_empty_warning)
             else -> null
         }
         Text(
@@ -191,7 +206,7 @@ private fun NameRow(index: Int, name: String, requester: FocusRequester, onClick
     Row(
         Modifier
             .fillMaxWidth()
-            .height(42.dp)
+            .height(38.dp)
             .graphicsLayer { scaleX = scale; scaleY = scale }
             .drawBehind {
                 drawGamePanel(if (focused) PanelState.FOCUSED else PanelState.NORMAL, 14.dp.toPx())
@@ -231,7 +246,7 @@ private fun NameRow(index: Int, name: String, requester: FocusRequester, onClick
         Box(
             Modifier
                 .weight(1f)
-                .height(31.dp)
+                .height(28.dp)
                 .background(
                     if (name.isBlank()) Brush.verticalGradient(listOf(Color(0xFF28325A), Color(0xFF1B2344)))
                     else Brush.verticalGradient(listOf(Color.White, Color(0xFFE6EBFA))),
