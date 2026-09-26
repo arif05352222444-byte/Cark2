@@ -23,7 +23,7 @@ data class GameRules(
     val finalMinHiddenTiles: Int = 3,
     val minPlayers: Int = 2,
     val maxPlayers: Int = 4,
-    val defaultPlayers: Int = 2,
+    val defaultPlayers: Int = 3,
     val maxNameLength: Int = 12,
     /** Türkçe karakteri olmayan klavyelerde "ISTANBUL" gibi yazımları da kabul et. */
     val lenientAnswerMatching: Boolean = true,
