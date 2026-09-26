@@ -6,6 +6,8 @@ package com.ailecarki.tv.domain.model
 data class GameState(
     val players: List<Player>,
     val currentPlayerIndex: Int = 0,
+    /** Oyunun başında rastgele seçilen ilk oyuncu; sonraki turlar buradan başlayarak döner. */
+    val startingPlayerIndex: Int = 0,
     val round: Int = 1,
     val totalRounds: Int,
     val puzzle: Puzzle,
