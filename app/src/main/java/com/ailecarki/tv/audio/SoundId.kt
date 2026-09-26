@@ -15,6 +15,8 @@ enum class SoundId(val category: AudioCategory, val fileBase: String, val stream
     VOICE_SPIN_PROMPT(AudioCategory.VOICE, "spin_prompt"),
     VOICE_WHEEL_SPINNING(AudioCategory.VOICE, "wheel_spinning"),
     VOICE_BUY_VOWEL(AudioCategory.VOICE, "buy_vowel"),
+    VOICE_SOLVE(AudioCategory.VOICE, "solve"),
+    VOICE_GET_READY(AudioCategory.VOICE, "get_ready"),
     VOICE_LETTER_MISSING(AudioCategory.VOICE, "letter_missing"),
     VOICE_COUNT_1(AudioCategory.VOICE, "count_1"),
     VOICE_COUNT_2(AudioCategory.VOICE, "count_2"),
@@ -50,6 +52,7 @@ enum class SoundId(val category: AudioCategory, val fileBase: String, val stream
     // --- Efektler
     FX_WHEEL_SPIN(AudioCategory.EFFECT, "wheel_spin", streamed = true),
     FX_WHEEL_STOP(AudioCategory.EFFECT, "wheel_stop"),
+    FX_TICK(AudioCategory.EFFECT, "tick"),
     FX_LETTER_REVEAL(AudioCategory.EFFECT, "letter_reveal"),
     FX_LETTER_WRONG(AudioCategory.EFFECT, "letter_wrong"),
     FX_SCORE_ADD(AudioCategory.EFFECT, "score_add"),

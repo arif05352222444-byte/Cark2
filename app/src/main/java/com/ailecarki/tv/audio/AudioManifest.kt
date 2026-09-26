@@ -17,6 +17,8 @@ object AudioManifest {
         SoundId.VOICE_SPIN_PROMPT to listOf("voice_spin"),
         SoundId.VOICE_WHEEL_SPINNING to listOf("voice_wheel_spinning"),
         SoundId.VOICE_BUY_VOWEL to listOf("voice_buy_vowel"),
+        SoundId.VOICE_SOLVE to listOf("voice_solve"),
+        SoundId.VOICE_GET_READY to listOf("voice_get_ready"),
         SoundId.VOICE_LETTER_MISSING to listOf("voice_letter_missing"),
         SoundId.VOICE_COUNT_1 to listOf("voice_one_letter"),
         SoundId.VOICE_COUNT_2 to listOf("voice_two_letters"),
@@ -51,6 +53,7 @@ object AudioManifest {
         // Efektler
         SoundId.FX_WHEEL_SPIN to listOf("effect_wheel_spin"),
         SoundId.FX_WHEEL_STOP to listOf("effect_wheel_stop"),
+        SoundId.FX_TICK to listOf("effect_wheel_tick"),
         SoundId.FX_LETTER_REVEAL to listOf("effect_letter_reveal"),
         SoundId.FX_LETTER_WRONG to listOf("effect_letter_wrong"),
         SoundId.FX_SCORE_ADD to listOf("effect_score_add"),
