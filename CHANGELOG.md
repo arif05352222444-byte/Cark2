@@ -1,5 +1,30 @@
 # CHANGELOG
 
+## 0.5.0 — Hakem paneli son hali + TV rötuşları
+- Hakem paneli artık SADECE sağ altta küçük pencere (ekranın ~%10'u). Ana ekran kararmıyor, bulmaca görünür kalıyor.
+  İçerik: HAKEM + oyuncu (+ finalde süre), DOĞRU CEVAP perdesi, CEVABI AÇ/GİZLE, TAMAM / DEVAM, küçük YAZARAK GİR.
+- Cevap açıldıktan 3 sn sonra kendiliğinden gizlenir; TAMAM/DEVAM/GERİ öncesi her zaman önce maskelenir.
+- GERİ: panel kapanır, sıra/skor/tur değişmez (çözüm denemesi sayılmaz).
+- Çözüm sırasında oyun ekranında küçük "ARİF, CEVABI SÖYLE!" kapsülü.
+- Ana menü rötuşları: çark ~%13 büyük, logo daha büyük ve daha derin 3D, ampuller/hale daha parlak,
+  mavi sis azaltıldı, İstanbul silueti ve ışıkları belirginleşti, sıcak yan spotlar güçlendi,
+  zeminde daha fazla altın yansıma, butonlarda daha fazla parlaklık/derinlik, alt slogan bandı inceltildi.
+- Mikrofon/SpeechRecognizer eklenmedi (bilinçli): karar zaten hakemde, çoğu TV Box'ta mikrofon yok.
+
+## 0.4.0 — Oyuncu sayısı seçimi + hakemli hızlı çözüm
+- Oyuncu isimleri ekranında 2 OYUNCU / 3 OYUNCU / 4 OYUNCU seçimi (varsayılan 3). Satır sayısı seçime göre.
+  Boş satırlara başlarken otomatik rastgele isim verilir → isim yazmadan da başlanır. "OYUNCU EKLE" kaldırıldı.
+- İlk oyuncu her yeni oyunda rastgele (GameEngine.newGame). Kartlar arasında hızla dolaşan ışık + tık sesi,
+  sonra "İLK SIRA ARİF'TE!" (Türkçe ek uyumlu). Sonraki turlar bu oyuncudan başlayarak döner.
+- ÇÖZ artık yazdırmıyor: "CEVABI SÖYLE" paneli + sağ altta perdeli HAKEM penceresi (AÇ / GİZLE).
+  Hakem gizli cevaba bakar: TAMAM · DOĞRU → doğru çözüm akışı, DEVAM · YANLIŞ → sıra geçer, cevap açılmaz.
+  Cevap yazısı bilerek küçük (uzaktan okunmasın). YAZARAK GİR yedek olarak duruyor.
+- Finalde de aynı hakem sistemi (süre işlemeye devam eder).
+- GameEngine: confirmSolve / confirmFinal (mevcut doğru/yanlış akışını kullanır), startingPlayerIndex (kayda eklendi).
+- Sesler: ÇÖZ'de "Cevabın nedir?", çekilişte çark tık sesi, sonra "Sıra sende!".
+- Testler 48 → 56: 2/3/4 oyuncu, rastgele başlangıç sadece mevcut oyunculardan, tur rotasyonu,
+  hakem doğru/yanlış, final hakem, İZMİR/izmir.
+
 ## 0.3.0 — Final ses paketi (AileCarki_AudioPack_Final)
 - 76 MP3 eklendi (51 sunucu cümlesi, 18 efekt, 4 arayüz efekti, 3 müzik) → assets/audio/{voice,effect,ui,music}.
 - Tüm eşleme tek dosyada: audio/AudioManifest.kt (62 SoundId, hepsi dosyaya bağlı; eksik yok).
