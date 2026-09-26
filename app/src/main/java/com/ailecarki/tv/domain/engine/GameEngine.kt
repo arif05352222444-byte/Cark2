@@ -21,11 +21,16 @@ class GameEngine(
 
     // ---------------------------------------------------------------- oyun kurulumu
 
-    fun newGame(names: List<String>, puzzles: List<Puzzle>): GameState {
+    /** [startingPlayer] null ise ilk oyuncu rastgele seçilir. */
+    fun newGame(names: List<String>, puzzles: List<Puzzle>, startingPlayer: Int? = null): GameState {
         require(names.size >= rules.minPlayers) { "En az ${rules.minPlayers} oyuncu gerekli" }
+        require(names.size <= rules.maxPlayers) { "En fazla ${rules.maxPlayers} oyuncu" }
         val puzzle = PuzzleEngine.pickPuzzle(puzzles, emptySet(), random)
+        val start = startingPlayer?.coerceIn(0, names.size - 1) ?: random.nextInt(names.size)
         return GameState(
             players = names.map { Player(it.trim()) },
+            currentPlayerIndex = start,
+            startingPlayerIndex = start,
             totalRounds = rules.normalRounds,
             puzzle = puzzle,
             usedPuzzleIds = setOf(puzzle.id),
@@ -172,6 +177,19 @@ class GameEngine(
         }
     }
 
+    /**
+     * Hakem kararı (sesli çözüm): oyuncu cevabı söyler, hakem gizli cevaba bakıp karar verir.
+     * Doğru → mevcut doğru çözüm akışı; yanlış → mevcut yanlış cevap / sıra geçme akışı. Cevap açılmaz.
+     */
+    fun confirmSolve(s: GameState, correct: Boolean): GameState {
+        if (s.phase != GamePhase.SOLVING) return s
+        return if (correct) {
+            completeRound(s, s.currentPlayerIndex, GameEvent.CorrectAnswer(s.currentPlayerIndex))
+        } else {
+            advanceTurn(s, GameEvent.WrongAnswer(s.currentPlayerIndex))
+        }
+    }
+
     // ---------------------------------------------------------------- tur geçişi
 
     private fun completeRound(s: GameState, winner: Int, event: GameEvent?): GameState {
@@ -197,7 +215,7 @@ class GameEngine(
         return s.copy(
             players = s.players.map { it.copy(roundScore = 0) },
             round = s.round + 1,
-            currentPlayerIndex = s.round % s.players.size, // her tur farklı oyuncu başlar
+            currentPlayerIndex = (s.startingPlayerIndex + s.round) % s.players.size, // her tur sıradaki oyuncu başlar
             puzzle = puzzle,
             usedPuzzleIds = s.usedPuzzleIds + puzzle.id,
             revealedLetters = emptySet(),
@@ -271,6 +289,10 @@ class GameEngine(
         val won = AnswerNormalizer.matches(text, s.puzzle.answer, rules.lenientAnswerMatching)
         return endFinal(s, won)
     }
+
+    /** Finalde hakem kararı (süre işlerken). */
+    fun confirmFinal(s: GameState, correct: Boolean): GameState =
+        if (s.phase == GamePhase.FINAL_SOLVING) endFinal(s, correct) else s
 
     fun finalTimeout(s: GameState): GameState =
         if (s.phase == GamePhase.FINAL_SOLVING) endFinal(s, false) else s
