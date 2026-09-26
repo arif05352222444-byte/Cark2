@@ -25,7 +25,7 @@
     <string name="remote_help_title">KUMANDA YARDIMI</string>
     <string name="remote_help_move">Yön tuşları ile gezin</string>
     <string name="remote_help_ok">OK ile seç</string>
-    <string name="remote_help_min">En az 2, en fazla 4 oyuncu ile oynayabilirsiniz.</string>
+    <string name="remote_help_min">Boş isimlere otomatik rastgele isim verilir.</string>
     <string name="back">GERİ</string>
 
     <!-- Oyun -->
@@ -74,7 +74,7 @@
     <string name="final_given">Verilen harfler: %1$s</string>
     <string name="final_pick_status">%1$d ÜNSÜZ + %2$d SESLİ SEÇ  (ünsüz %3$d/%1$d · sesli %4$d/%2$d)</string>
     <string name="final_time_left">%1$d SN</string>
-    <string name="final_enter_answer">CEVABI YAZ</string>
+    <string name="final_enter_answer">CEVABI SÖYLE</string>
     <string name="final_win_title">BÜYÜK FİNAL KAZANILDI!</string>
     <string name="final_win_sub">Tebrikler %1$s!</string>
     <string name="final_lose_title">FİNAL BİTTİ</string>
@@ -116,4 +116,18 @@
     <string name="vowel_badge_sub">Bedeli %1$d puan</string>
     <string name="your_turn_two_lines">SIRA\nSENDE</string>
     <string name="help_ok">Seç</string>
+    <string name="setup_count">%1$d OYUNCU</string>
+    <string name="first_turn_title">İLK SIRA</string>
+    <string name="referee_say">CEVABI SÖYLE</string>
+    <string name="referee_say_sub">Cevabını yüksek sesle söyle.</string>
+    <string name="referee_hint">Hakem sağ alttaki pencereden cevaba baksın.</string>
+    <string name="referee_title">HAKEM</string>
+    <string name="referee_hidden">GİZLİ</string>
+    <string name="referee_open">CEVABI AÇ</string>
+    <string name="referee_hide">GİZLE</string>
+    <string name="referee_correct">TAMAM</string>
+    <string name="referee_wrong">DEVAM</string>
+    <string name="referee_type">YAZARAK GİR</string>
+    <string name="referee_answer_label">DOĞRU CEVAP:</string>
+    <string name="solving_banner">%1$s, CEVABI SÖYLE!</string>
 </resources>
