@@ -221,4 +221,71 @@ class GameEngineTest {
         assertFalse(e.canBuyVowel(s))
         assertTrue(e.canSolve(s))
     }
+
+    @Test fun twoThreeFourPlayerGames() {
+        for (n in 2..4) {
+            val e = TestFixtures.engine(TestFixtures.points(500))
+            val s = e.newGame(List(n) { "P$it" }, TestFixtures.PUZZLES)
+            assertEquals(n, s.players.size)
+            assertTrue(s.currentPlayerIndex in 0 until n)
+        }
+    }
+
+    @Test fun randomStartingPlayerIsAlwaysAnExistingPlayerAndVaries() {
+        val seen = HashSet<Int>()
+        for (seed in 0 until 200) {
+            val e = com.ailecarki.tv.domain.engine.GameEngine(
+                com.ailecarki.tv.domain.rules.GameRules(),
+                com.ailecarki.tv.domain.engine.WheelEngine(listOf(TestFixtures.points(500))),
+                kotlin.random.Random(seed),
+            )
+            val s = e.newGame(listOf("A", "B", "C"), TestFixtures.PUZZLES)
+            assertTrue(s.currentPlayerIndex in 0..2)
+            assertEquals(s.currentPlayerIndex, s.startingPlayerIndex)
+            seen += s.currentPlayerIndex
+        }
+        assertEquals(3, seen.size)
+    }
+
+    @Test fun nextRoundRotatesFromRandomStart() {
+        val e = TestFixtures.engine(TestFixtures.points(500))
+        var s = e.newGame(listOf("A", "B", "C"), TestFixtures.PUZZLES, startingPlayer = 2)
+        assertEquals(2, s.currentPlayerIndex)
+        s = e.nextRound(e.submitSolve(e.startSolve(s), s.puzzle.answer), TestFixtures.PUZZLES)
+        assertEquals(0, s.currentPlayerIndex) // 2 → 0
+        s = e.nextRound(e.submitSolve(e.startSolve(s), s.puzzle.answer), TestFixtures.PUZZLES)
+        assertEquals(1, s.currentPlayerIndex)
+    }
+
+    @Test fun refereeCorrectConfirmationCompletesRound() {
+        val e = TestFixtures.engine(TestFixtures.points(500))
+        val s = e.confirmSolve(e.startSolve(TestFixtures.state()), correct = true)
+        assertEquals(GamePhase.ROUND_COMPLETE, s.phase)
+        assertEquals(GameEvent.CorrectAnswer(0), s.lastEvent)
+        assertEquals(1, s.players[0].roundsWon)
+    }
+
+    @Test fun refereeWrongConfirmationPassesTurnAndKeepsPuzzleHidden() {
+        val e = TestFixtures.engine(TestFixtures.points(500))
+        val s = e.confirmSolve(e.startSolve(TestFixtures.state()), correct = false)
+        assertEquals(1, s.currentPlayerIndex)
+        assertEquals(GamePhase.PLAYER_TURN, s.phase)
+        assertEquals(GameEvent.WrongAnswer(0), s.lastEvent)
+        assertTrue(s.revealedLetters.isEmpty())
+    }
+
+    @Test fun refereeOnlyWorksWhileSolving() {
+        val e = TestFixtures.engine(TestFixtures.points(500))
+        val s = TestFixtures.state()
+        assertSame(s, e.confirmSolve(s, correct = true))
+    }
+
+    @Test fun refereeFinalConfirmation() {
+        val e = TestFixtures.engine(TestFixtures.points(500))
+        var s = e.nextRound(TestFixtures.state().copy(phase = GamePhase.ROUND_COMPLETE, round = 3), TestFixtures.PUZZLES)
+        s = s.copy(phase = GamePhase.FINAL_SOLVING)
+        assertEquals(true, e.confirmFinal(s, true).finalWon)
+        assertEquals(false, e.confirmFinal(s, false).finalWon)
+        assertEquals(GamePhase.GAME_COMPLETE, e.confirmFinal(s, false).phase)
+    }
 }

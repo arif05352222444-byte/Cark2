@@ -46,4 +46,9 @@ class AnswerNormalizationTest {
         val letters = com.ailecarki.tv.domain.engine.TurkishAlphabet.LETTERS.joinToString("")
         assertEquals("ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ", letters)
     }
+
+    @Test fun izmirLowercaseMatches() {
+        assertTrue(AnswerNormalizer.matches("izmir", "İZMİR", lenient = false))
+        assertTrue(AnswerNormalizer.matches("  İzmir ", "İZMİR", lenient = false))
+    }
 }
