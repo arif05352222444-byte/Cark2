@@ -66,7 +66,7 @@ fun DrawScope.drawGamePanel(state: PanelState, corner: Float, glowAlpha: Float =
     drawRoundRect(body, cornerRadius = r)
     // Gloss: üst yarıda yumuşak beyaz parlaklık
     drawRoundRect(
-        Brush.verticalGradient(listOf(Color(0x40FFFFFF), Color(0x08FFFFFF), Color.Transparent), 0f, size.height * 0.55f),
+        Brush.verticalGradient(listOf(Color(0x58FFFFFF), Color(0x10FFFFFF), Color.Transparent), 0f, size.height * 0.55f),
         size = Size(size.width, size.height * 0.55f),
         cornerRadius = r,
     )
@@ -78,8 +78,13 @@ fun DrawScope.drawGamePanel(state: PanelState, corner: Float, glowAlpha: Float =
     }
     val bw = if (focused) 3.dp.toPx() else 1.6.dp.toPx()
     if (state == PanelState.NORMAL) {
-        drawRoundRect(AppColors.Neon.copy(alpha = 0.25f), cornerRadius = r, style = Stroke(bw * 3.5f))
+        drawRoundRect(AppColors.Neon.copy(alpha = 0.35f), cornerRadius = r, style = Stroke(bw * 3.5f))
     }
+    // Alt kenarda hafif koyu çizgi → derinlik
+    drawRoundRect(
+        Brush.verticalGradient(listOf(Color.Transparent, Color(0x33000000)), size.height * 0.6f, size.height),
+        cornerRadius = r,
+    )
     drawRoundRect(border, cornerRadius = r, style = Stroke(bw))
 }
 

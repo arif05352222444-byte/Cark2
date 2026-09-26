@@ -62,8 +62,8 @@ fun goldTextStyle(size: TextUnit) = TextStyle(
 @OptIn(ExperimentalTextApi::class)
 @Composable
 fun GoldText(text: String, fontSize: TextUnit, modifier: Modifier = Modifier) {
-    val outline = (fontSize.value * 0.05f).coerceIn(1.2f, 3.5f)
-    val depth = (fontSize.value * 0.09f).coerceIn(2f, 6f)
+    val outline = (fontSize.value * 0.06f).coerceIn(1.4f, 4f)
+    val depth = (fontSize.value * 0.12f).coerceIn(2.5f, 7.5f)
     val plain = TextStyle(fontSize = fontSize, fontFamily = GameFont)
     Box(modifier) {
         // Derinlik (alt koyu katman)
@@ -108,7 +108,7 @@ fun TitleMarquee(text: String, modifier: Modifier = Modifier, fontSize: TextUnit
                 for (i in 3 downTo 1) {
                     val g = i * size.height * 0.05f
                     drawRoundRect(
-                        AppColors.Gold.copy(alpha = 0.07f * breathe * (4 - i)),
+                        AppColors.Gold.copy(alpha = 0.11f * breathe * (4 - i)),
                         Offset(-g, -g), Size(size.width + g * 2, size.height + g * 2), CornerRadius(r + g),
                     )
                 }
@@ -134,8 +134,8 @@ fun TitleMarquee(text: String, modifier: Modifier = Modifier, fontSize: TextUnit
                 val straight = size.width - size.height
                 fun bulb(x: Float, y: Float, idx: Int) {
                     val phase = (idx.toFloat() / n) * 3f - wave * 3f
-                    val a = 0.35f + 0.65f * ((sin(phase * 2f * PI.toFloat()) + 1f) / 2f)
-                    drawCircle(Color(0xFFFFC24A).copy(alpha = a * 0.35f), bulbR * 2.2f, Offset(x, y))
+                    val a = 0.45f + 0.55f * ((sin(phase * 2f * PI.toFloat()) + 1f) / 2f)
+                    drawCircle(Color(0xFFFFC24A).copy(alpha = a * 0.45f), bulbR * 2.8f, Offset(x, y))
                     drawCircle(Color(0xFFFFF4D0).copy(alpha = a), bulbR, Offset(x, y))
                 }
                 for (i in 0 until n) {

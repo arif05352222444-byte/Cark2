@@ -35,7 +35,7 @@ fun StageBackground(modifier: Modifier = Modifier, showCity: Boolean = true) {
         )
         // Merkezde mor/mavi hale
         drawCircle(
-            Brush.radialGradient(listOf(Color(0x664E5BFF), Color(0x00000000)), Offset(w * 0.5f, h * 0.45f), w * 0.45f),
+            Brush.radialGradient(listOf(Color(0x304E5BFF), Color(0x00000000)), Offset(w * 0.5f, h * 0.45f), w * 0.45f),
             radius = w * 0.45f, center = Offset(w * 0.5f, h * 0.45f),
         )
         drawBeams(w, h)
@@ -58,7 +58,7 @@ private fun DrawScope.drawBeams(w: Float, h: Float) {
             lineTo(w * (x + dir * 0.12f) - w * 0.07f, h * 0.78f)
             close()
         }
-        val a = if (i % 2 == 0) 0x30 else 0x22
+        val a = if (i % 2 == 0) 0x22 else 0x16
         drawPath(path, Brush.verticalGradient(listOf(Color(a shl 24 or 0x9FC2FF), Color.Transparent), 0f, h * 0.78f))
     }
     // Yanlardan sıcak sarı spotlar
@@ -69,7 +69,7 @@ private fun DrawScope.drawBeams(w: Float, h: Float) {
             lineTo(w * (x + dir * 0.16f), h * 0.62f)
             close()
         }
-        drawPath(path, Brush.linearGradient(listOf(Color(0x40FFC24A), Color.Transparent), Offset(w * x, h * 0.05f), Offset(w * (x + dir * 0.24f), h * 0.6f)))
+        drawPath(path, Brush.linearGradient(listOf(Color(0x78FFC24A), Color(0x22FF9A2E), Color.Transparent), Offset(w * x, h * 0.05f), Offset(w * (x + dir * 0.26f), h * 0.62f)))
     }
 }
 
@@ -77,10 +77,10 @@ private fun DrawScope.drawCity(w: Float, h: Float) {
     val water = h * 0.6f
     // Ufuk ışıltısı (mor-turuncu)
     drawRect(
-        Brush.verticalGradient(listOf(Color.Transparent, Color(0x33FF7A59), Color(0x22B06CFF)), h * 0.38f, water),
+        Brush.verticalGradient(listOf(Color.Transparent, Color(0x55FF7A59), Color(0x33B06CFF)), h * 0.38f, water),
         Offset(w * 0.2f, h * 0.38f), Size(w * 0.6f, water - h * 0.38f),
     )
-    val sil = Color(0xCC0A1040)
+    val sil = Color(0xF2070C33)
     // Köprü
     val deckY = water - h * 0.055f
     val t1 = w * 0.3f
@@ -125,10 +125,10 @@ private fun DrawScope.drawCity(w: Float, h: Float) {
     }, sil)
     // Pencere ışıkları
     val rnd = Random(7)
-    repeat(70) {
+    repeat(130) {
         val x = w * (0.5f + rnd.nextFloat() * 0.32f)
         val y = water - h * (0.005f + rnd.nextFloat() * 0.04f)
-        drawCircle(Color(0x99FFD98A), h * 0.0022f, Offset(x, y))
+        drawCircle(Color(0xCCFFD98A), h * 0.0024f, Offset(x, y))
     }
     // Su ve yansımalar
     drawRect(
@@ -138,7 +138,7 @@ private fun DrawScope.drawCity(w: Float, h: Float) {
     repeat(40) {
         val x = w * (0.2f + rnd.nextFloat() * 0.6f)
         val y = water + h * (0.008f + rnd.nextFloat() * 0.08f)
-        drawRect(Color(0x44FFD98A), Offset(x, y), Size(w * (0.01f + rnd.nextFloat() * 0.02f), h * 0.003f))
+        drawRect(Color(0x66FFD98A), Offset(x, y), Size(w * (0.01f + rnd.nextFloat() * 0.02f), h * 0.003f))
     }
 }
 
@@ -175,7 +175,7 @@ private fun DrawScope.drawFloor(w: Float, h: Float) {
     val rnd = Random(3)
     repeat(26) {
         val x = w * rnd.nextFloat()
-        val col = if (it % 3 == 0) Color(0x33FFC24A) else Color(0x264F8BFF)
+        val col = if (it % 2 == 0) Color(0x4DFFC24A) else Color(0x224F8BFF)
         drawRect(
             Brush.verticalGradient(listOf(col, Color.Transparent), top, top + h * 0.2f),
             Offset(x, top), Size(w * 0.004f, h * 0.2f),
@@ -193,7 +193,7 @@ private fun DrawScope.drawFloor(w: Float, h: Float) {
 private fun DrawScope.drawTopLights(w: Float, h: Float) {
     for (i in 0..11) {
         val cx = w * (0.04f + i * 0.084f)
-        val r = h * 0.045f
+        val r = h * 0.055f
         drawCircle(
             Brush.radialGradient(listOf(Color(0xCCFFF3C8), Color(0x44FFD27A), Color.Transparent), Offset(cx, h * 0.01f), r),
             radius = r, center = Offset(cx, h * 0.01f),
