@@ -42,6 +42,10 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
     private val _names = MutableStateFlow(List(GameRules().defaultPlayers) { "" })
     val names: StateFlow<List<String>> = _names.asStateFlow()
 
+    /** Yeni oyunda "ilk sıra kimde" çekilişi animasyonu gösterilsin mi. */
+    private val _startIntro = MutableStateFlow(false)
+    val startIntro: StateFlow<Boolean> = _startIntro.asStateFlow()
+
     private val _finalSecondsLeft = MutableStateFlow(0)
     val finalSecondsLeft: StateFlow<Int> = _finalSecondsLeft.asStateFlow()
 
@@ -72,6 +76,13 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
         if (_names.value.size > rules.minPlayers) _names.value = _names.value.dropLast(1)
     }
 
+    /** 2 / 3 / 4 oyuncu seçimi: yazılmış isimler korunur, satır sayısı seçime göre ayarlanır. */
+    fun setPlayerCount(count: Int) {
+        val n = count.coerceIn(rules.minPlayers, rules.maxPlayers)
+        val cur = _names.value
+        _names.value = if (n <= cur.size) cur.take(n) else cur + List(n - cur.size) { "" }
+    }
+
     fun fillRandomNames() {
         val taken = _names.value.toMutableSet()
         val pool = RANDOM_NAMES.filter { it !in taken }.shuffled().iterator()
@@ -92,12 +103,15 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun startNewGame(onReady: () -> Unit) {
+        // Boş kalan satırlara rastgele isim ver → isim yazmadan da hemen başlanabilir.
+        if (_names.value.any { it.isBlank() }) fillRandomNames()
         if (!namesValid()) return
         viewModelScope.launch {
             buildEngine()
             timerJob?.cancel()
             _state.value = null
             update(engine.newGame(filledNames(), puzzles))
+            _startIntro.value = true
             audio.playVoice(SoundId.VOICE_WELCOME, interrupt = true)
             audio.playVoice(SoundId.VOICE_GAME_START)
             onReady()
@@ -110,6 +124,7 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
             val saved = container.savedGames.load()
             if (saved == null) { onReady(false); return@launch }
             _names.value = saved.players.map { it.name }
+            _startIntro.value = false
             _state.value = null
             update(engine.sanitizeForResume(saved))
             onReady(true)
@@ -163,6 +178,24 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
     fun startSolve() = act(engine::startSolve)
     fun cancelSolve() = act(engine::cancelSolve)
     fun submitSolve(text: String) = act { engine.submitSolve(it, text) }
+
+    /** Hakem kararı (normal tur). */
+    fun confirmSolve(correct: Boolean) = act { engine.confirmSolve(it, correct) }
+
+    /** Hakem kararı (final). */
+    fun confirmFinal(correct: Boolean) {
+        timerJob?.cancel()
+        act { engine.confirmFinal(it, correct) }
+    }
+
+    /** Çekiliş animasyonunda her adımda kısa tık sesi. */
+    fun introTick() = audio.playEffect(SoundId.FX_TICK)
+
+    fun finishStartIntro() {
+        if (!_startIntro.value) return
+        _startIntro.value = false
+        audio.playVoice(SoundId.VOICE_YOUR_TURN)
+    }
     fun nextRound() = act { engine.nextRound(it, puzzles) }
     fun finishFinalReveal() = act(engine::finishFinalReveal)
 
@@ -196,6 +229,7 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
                 }
                 GamePhase.WHEEL_RESULT -> announceWheelResult(new)
                 GamePhase.VOWEL_SELECTION -> audio.playVoice(SoundId.VOICE_BUY_VOWEL, interrupt = true)
+                GamePhase.SOLVING -> audio.playVoice(SoundId.VOICE_SOLVE, interrupt = true)
                 GamePhase.ROUND_COMPLETE -> {
                     audio.playEffect(SoundId.FX_ROUND_WIN)
                     audio.playVoice(SoundId.VOICE_ROUND_COMPLETE)
