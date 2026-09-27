@@ -24,6 +24,15 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
+import kotlin.math.roundToInt
+import com.ailecarki.tv.R
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.FilterQuality
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shadow
@@ -86,6 +95,11 @@ private val OUTLINE_DIRS = listOf(-1f to 0f, 1f to 0f, 0f to -1f, 0f to 1f, -0.7
  */
 @Composable
 fun TitleMarquee(text: String, modifier: Modifier = Modifier, fontSize: TextUnit = 40.sp) {
+    // "AİLE ÇARKI" için hazır altın logo görseli (logo_aile_carki.webp) kullanılır; diğer başlıklar (FİNAL) kodla çizilir.
+    if (text == stringResource(R.string.title)) {
+        LogoImage(height = (fontSize.value * 1.9f).dp, modifier = modifier)
+        return
+    }
     val transition = rememberInfiniteTransition(label = "marquee")
     val wave by transition.animateFloat(
         initialValue = 0f,
@@ -182,5 +196,41 @@ fun GoldStar(size: Dp, modifier: Modifier = Modifier) {
         }
         drawPath(path, Color(0xFF5A2A00), style = Stroke(r * 0.18f))
         drawPath(path, GoldTextBrush)
+    }
+}
+
+/**
+ * Görsel logo + canlılık: arkada yavaşça nefes alan altın hale, üstte ampullerin parlayıp sönmesi
+ * (logonun aydınlatılmış kopyası). Sadece çizim aşaması → recomposition yok.
+ */
+@Composable
+fun LogoImage(height: Dp, modifier: Modifier = Modifier) {
+    val logo = ImageBitmap.imageResource(R.drawable.logo_aile_carki)
+    val width = height * (logo.width.toFloat() / logo.height)
+    val transition = rememberInfiniteTransition(label = "logo")
+    val breathe by transition.animateFloat(
+        initialValue = 0f, targetValue = 1f,
+        animationSpec = infiniteRepeatable(tween(2200), RepeatMode.Reverse),
+        label = "logoBreathe",
+    )
+    Canvas(modifier.size(width, height)) {
+        val w = size.width
+        val h = size.height
+        // Dış hale
+        for (i in 3 downTo 1) {
+            val g = i * h * 0.05f
+            drawRoundRect(
+                AppColors.Gold.copy(alpha = 0.06f * (4 - i) * (0.4f + 0.6f * breathe)),
+                Offset(w * 0.02f - g, h * 0.08f - g),
+                Size(w * 0.96f + g * 2, h * 0.84f + g * 2),
+                CornerRadius(h * 0.42f + g),
+            )
+        }
+        val dst = IntSize(w.roundToInt(), h.roundToInt())
+        drawImage(logo, IntOffset.Zero, IntSize(logo.width, logo.height), IntOffset.Zero, dst, filterQuality = FilterQuality.Medium)
+        drawImage(
+            logo, IntOffset.Zero, IntSize(logo.width, logo.height), IntOffset.Zero, dst,
+            alpha = 0.05f + 0.30f * breathe, blendMode = BlendMode.Plus, filterQuality = FilterQuality.Medium,
+        )
     }
 }

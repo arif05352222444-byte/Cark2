@@ -4,6 +4,13 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.ui.unit.min
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.RepeatMode
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -14,7 +21,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -65,6 +71,14 @@ fun PlayerScoreCard(
     val base = AppColors.PlayerColors[index % AppColors.PlayerColors.size]
     val shownScore by animateIntAsState(player.score, tween(800), label = "score")
     val activeAnim by animateFloatAsState(if (active) 1f else 0f, tween(450), label = "active")
+    // Sıradaki oyuncu: kalın, yavaşça yanıp sönen altın çerçeve (sadece çizimde okunur → recomposition yok)
+    val blinkTransition = rememberInfiniteTransition(label = "turnBlink")
+    val blink by blinkTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(tween(750), RepeatMode.Reverse),
+        label = "turnBlinkValue",
+    )
     val pulse = remember { Animatable(1f) }
     val shake = remember { Animatable(0f) }
     var lastScore by remember { mutableIntStateOf(player.score) }
@@ -89,10 +103,11 @@ fun PlayerScoreCard(
             .drawBehind {
                 val r = CornerRadius(corner.toPx())
                 if (activeAnim > 0f) {
-                    for (i in 4 downTo 1) {
-                        val g = i * 3.5f * density
+                    val pulse = 0.45f + 0.55f * blink
+                    for (i in 5 downTo 1) {
+                        val g = i * 4f * density
                         drawRoundRect(
-                            AppColors.Gold.copy(alpha = (0.08f + 0.05f * (4 - i)) * activeAnim),
+                            AppColors.Gold.copy(alpha = (0.07f + 0.06f * (5 - i)) * activeAnim * pulse),
                             Offset(-g, -g), Size(size.width + g * 2, size.height + g * 2), CornerRadius(r.x + g),
                         )
                     }
@@ -105,10 +120,15 @@ fun PlayerScoreCard(
                     size = Size(size.width, size.height * 0.5f), cornerRadius = r,
                 )
                 drawRoundRect(lerp(base, Color.White, 0.5f).copy(alpha = 0.35f), cornerRadius = r, style = Stroke(5.dp.toPx()))
-                drawRoundRect(
-                    lerp(lerp(base, Color.White, 0.55f), AppColors.Gold, activeAnim),
-                    cornerRadius = r, style = Stroke((1.8f + 1.8f * activeAnim) * density),
-                )
+                if (activeAnim > 0f) {
+                    // Kalın altın çerçeve: kalınlığı ve parlaklığı nabız gibi değişir
+                    val bw = (5f + 3f * blink) * density * activeAnim
+                    val c = lerp(AppColors.Gold, Color(0xFFFFF8D6), blink)
+                    drawRoundRect(c, cornerRadius = r, style = Stroke(bw))
+                    drawRoundRect(Color(0xFF7A4200).copy(alpha = activeAnim), cornerRadius = r, style = Stroke(1.2f * density))
+                } else {
+                    drawRoundRect(lerp(base, Color.White, 0.55f), cornerRadius = r, style = Stroke(1.8f * density))
+                }
             }
             .padding(horizontal = 12.dp),
         contentAlignment = Alignment.Center,
@@ -193,22 +213,29 @@ fun PlayerScoreRow(
     showTurnBadge: Boolean = false,
     height: Dp = 64.dp,
 ) {
-    Row(
-        modifier,
-        horizontalArrangement = Arrangement.spacedBy(14.dp, Alignment.CenterHorizontally),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        if (showTurnBadge) {
-            TurnBadge(height * 1.15f)
-            GameIcon(GameIconKind.PLAY, AppColors.Gold, size = 18.dp)
-        }
-        players.forEachIndexed { i, p ->
-            PlayerScoreCard(
-                p, i, i == activeIndex,
-                Modifier.weight(1f).widthIn(max = 230.dp),
-                doubleBadge = doubleActive && i == activeIndex,
-                height = height,
-            )
+    BoxWithConstraints(modifier) {
+        val gap = 14.dp
+        val badgeW = if (showTurnBadge) height * 1.15f + 18.dp + gap * 2 else 0.dp
+        val n = players.size.coerceAtLeast(1)
+        // Kartlar sabit genişlikte (en fazla 230dp) ve ortalı → 2 oyuncuda da ekranı boydan boya kaplamaz.
+        val cardW = min(230.dp, (maxWidth - badgeW - gap * (n - 1)) / n)
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(gap, Alignment.CenterHorizontally),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (showTurnBadge) {
+                TurnBadge(height * 1.15f)
+                GameIcon(GameIconKind.PLAY, AppColors.Gold, size = 18.dp)
+            }
+            players.forEachIndexed { i, p ->
+                PlayerScoreCard(
+                    p, i, i == activeIndex,
+                    Modifier.width(cardW),
+                    doubleBadge = doubleActive && i == activeIndex,
+                    height = height,
+                )
+            }
         }
     }
 }

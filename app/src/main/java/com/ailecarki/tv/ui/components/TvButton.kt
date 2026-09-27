@@ -105,6 +105,7 @@ fun TvButton(
     corner: Dp = 16.dp,
     icon: GameIconKind? = null,
     alignStart: Boolean = false,
+    contentPadding: Dp = 18.dp,
 ) {
     val interaction = remember { MutableInteractionSource() }
     val focused by interaction.collectIsFocusedAsState()
@@ -149,13 +150,13 @@ fun TvButton(
                     sound(SoundId.UI_DISABLED)
                 }
             }
-            .padding(horizontal = 18.dp),
+            .padding(horizontal = contentPadding),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = if (alignStart) Arrangement.Start else Arrangement.Center,
     ) {
         if (icon != null) {
             GameIcon(icon, contentColor.copy(alpha = contentAlpha), size = (height.value * 0.46f).dp)
-            Spacer(Modifier.width(14.dp))
+            Spacer(Modifier.width(if (contentPadding < 18.dp) 8.dp else 14.dp))
         }
         Text(
             text = text,
