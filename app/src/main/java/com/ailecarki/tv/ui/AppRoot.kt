@@ -17,7 +17,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ailecarki.tv.AileCarkiApp
 import com.ailecarki.tv.audio.SoundId
 import com.ailecarki.tv.ui.components.LocalSoundPlayer
-import com.ailecarki.tv.ui.components.StageBackground
+import com.ailecarki.tv.ui.components.SceneBackground
+import com.ailecarki.tv.R
 import com.ailecarki.tv.ui.screens.GameScreen
 import com.ailecarki.tv.ui.screens.HomeScreen
 import com.ailecarki.tv.ui.screens.PlayerSetupScreen
@@ -56,7 +57,15 @@ fun AppRoot(onExit: () -> Unit) {
 
     CompositionLocalProvider(LocalSoundPlayer provides sound) {
         Box(Modifier.fillMaxSize()) {
-            StageBackground()
+            // Sahne görseli ekrana göre: menü / oyuncu kurulumu / oyun / final (yumuşak geçişli)
+            val bg = when {
+                screen == Screen.SETUP -> R.drawable.bg_game
+                screen == Screen.GAME && game != null && !isFinal -> R.drawable.bg_game
+                screen == Screen.GAME && isFinal -> R.drawable.bg_panel
+                screen == Screen.SETTINGS -> R.drawable.bg_panel
+                else -> R.drawable.bg_menu
+            }
+            SceneBackground(bg)
             when (screen) {
                 Screen.HOME -> HomeScreen(
                     hasSavedGame = hasSaved,
