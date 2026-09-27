@@ -9,6 +9,7 @@
 - Segment ayırıcıları inceltildi, seçili dilim glow/pulse efekti güçlendirildi; frame glow aşırı patlamayacak şekilde dengelendi.
 - Menü çarkı hafif büyütüldü; ayarlar ve final için bg_panel kullanılıyor.
 - Android build bu çalışma ortamında doğrulanamadı: Gradle dağıtımı ağ erişimi olmadığı için indirilemedi.
+- Derleme düzeltmesi: SceneBackground.kt içindeki `Image(painter = ...)` çağrısından `filterQuality` parametresi kaldırıldı (painter overload'ı bu parametreyi kabul etmiyor, compileDebugKotlin hatası veriyordu).
 
 ## 0.6.0 — Görsel paket (AileCarki_ArtPack_v1) + 12 dilimli çark
 - Çark 24 ince dilimden 12 büyük dilime indi (her biri 30°), WheelConfig.DEFAULT:
