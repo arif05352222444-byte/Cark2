@@ -62,7 +62,7 @@ class GameEngine(
         }
     }
 
-    fun currentSegment(s: GameState) = s.spinSegmentIndex?.let { wheel.segments[it] }
+    fun currentSegment(s: GameState) = s.spinSegmentIndex?.let { wheel.segments.getOrNull(it) }
 
     // ---------------------------------------------------------------- çark
 
@@ -311,6 +311,12 @@ class GameEngine(
     /** Kaydedilmiş bir oyunu animasyon ortasında kalmış fazlardan güvenli bir faza taşır. */
     fun sanitizeForResume(s: GameState): GameState {
         val base = s.copy(lastEvent = null)
+        // Çark değiştiyse (ör. 24 → 12 dilim) eski kayıttaki dilim numarası geçersiz olabilir:
+        // çark aşamasında kalmış oyunu güvenle "sıra sende, çarkı çevir" durumuna al.
+        val wheelPhases = setOf(GamePhase.WHEEL_SPINNING, GamePhase.WHEEL_RESULT, GamePhase.LETTER_SELECTION)
+        if (base.phase in wheelPhases && currentSegment(base) == null) {
+            return base.copy(phase = GamePhase.PLAYER_TURN, spinSegmentIndex = null)
+        }
         return when (base.phase) {
             GamePhase.WHEEL_SPINNING -> base.copy(phase = GamePhase.WHEEL_RESULT)
             GamePhase.LETTER_REVEAL -> finishReveal(base)
