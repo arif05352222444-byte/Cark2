@@ -39,6 +39,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import com.ailecarki.tv.R
 import com.ailecarki.tv.domain.model.GameEvent
@@ -195,6 +196,7 @@ fun BannerCard(
     accent: Color,
     modifier: Modifier = Modifier,
     liveScore: (() -> String)? = null,
+    subtitleFontSize: TextUnit = 24.sp,
 ) {
     Column(
         modifier
@@ -219,7 +221,7 @@ fun BannerCard(
         if (liveScore != null) {
             LiveScoreText(liveScore)
         } else if (subtitle != null) {
-            Text(subtitle, color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
+            Text(subtitle, color = Color.White, fontSize = subtitleFontSize, fontFamily = GameFont, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
         }
     }
 }
