@@ -332,6 +332,7 @@ private fun MainGameContent(s: GameState, vm: GameViewModel, refocusKey: Any?) {
             introHighlight ?: s.currentPlayerIndex,
             Modifier.offset(x = padH, y = cardsTop).width(screenW - padH * 2).height(cardsH),
             doubleActive = s.doubleActive,
+            jokerActive = s.jokerAttemptsRemaining > 0,
             showTurnBadge = true,
             height = cardsH,
         )
@@ -446,7 +447,10 @@ private fun ActionColumn(s: GameState, vm: GameViewModel, refocusKey: Any?, lock
         RequestFocus(if (canSpin || locked) spin else solve, s.phase, s.currentPlayerIndex, s.eventCounter, refocusKey, locked)
     }
     val w = Modifier.fillMaxWidth()
-    TvButton(stringResource(R.string.action_spin), vm::spin, w, enabled = canSpin, focusRequester = spin, height = 48.dp, fontSize = 19.sp, icon = GameIconKind.WHEEL, alignStart = true)
+    TvButton(
+        stringResource(if (s.doubleActive) R.string.action_spin_double else R.string.action_spin),
+        vm::spin, w, enabled = canSpin, focusRequester = spin, height = 48.dp, fontSize = if (s.doubleActive) 16.sp else 19.sp, icon = GameIconKind.WHEEL, alignStart = true,
+    )
     TvButton(stringResource(R.string.action_letter), onLetterClick, w, enabled = s.phase in SELECTION_PHASES, height = 48.dp, fontSize = 19.sp, icon = GameIconKind.KEYBOARD, alignStart = true)
     TvButton(stringResource(R.string.action_vowel_short), vm::buyVowel, w, enabled = vm.canBuyVowel() && !locked, height = 48.dp, fontSize = 19.sp, icon = GameIconKind.BULB, alignStart = true)
     TvButton(stringResource(R.string.action_solve), vm::startSolve, w, enabled = vm.canSolve() && !locked, focusRequester = solve, height = 48.dp, fontSize = 19.sp, icon = GameIconKind.CHECK, alignStart = true)
@@ -472,46 +476,72 @@ private fun KeyboardPanel(s: GameState, vm: GameViewModel, focusKey: Any?, keySi
     }
 }
 
-/** "500 PUAN" altın rozeti + altında "Harf seç". */
+/**
+ * Çark sonucu sonrası yönlendirme. Puan en üstte, aktif oyuncu adı ortada büyük,
+ * yapılacak hareket en altta ayrı okunur. TV'den uzaktan "sıra kimde?" sorusu kalmaz.
+ */
 @Composable
 private fun PointsBadge(s: GameState, vm: GameViewModel) {
     val seg = s.spinSegmentIndex?.let { vm.wheel.segments.getOrNull(it) }
     val player = s.currentPlayer.name.uppercase(TurkishAlphabet.LOCALE)
     val title: String
-    val sub: String
+    val action: String
+    val helper: String?
     when {
         s.phase == GamePhase.VOWEL_SELECTION -> {
             title = stringResource(R.string.vowel_badge)
-            sub = "$player SESLİ HARF SEÇ"
+            action = "SESLİ HARF SEÇ"
+            helper = null
         }
         seg?.type == SegmentType.JOKER -> {
-            title = WheelConfig.LABEL_JOKER
-            sub = "$player HARF SEÇ"
+            title = stringResource(R.string.pick_joker, formatScore(vm.rules.jokerPoints))
+            action = if (s.jokerAttemptsRemaining == 1) "BİR KEZ DAHA HARF SEÇ" else "HARF SEÇ"
+            helper = if (s.jokerAttemptsRemaining == 1) "İkinci Joker hakkın" else "Yanlışsa 1 seçim hakkın daha var"
         }
         seg != null -> {
             title = stringResource(R.string.points_value, formatScore(seg.value)) + if (s.doubleActive) " · 2X" else ""
-            sub = "$player HARF SEÇ"
+            action = "HARF SEÇ"
+            helper = null
         }
         else -> {
             title = ""
-            sub = ""
+            action = ""
+            helper = null
         }
     }
-    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(top = 6.dp)) {
-        GoldCapsule { GoldText(title, 30.sp) }
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(2.dp),
+        modifier = Modifier.padding(top = 4.dp),
+    ) {
+        GoldCapsule { GoldText(title, if (seg?.type == SegmentType.JOKER) 25.sp else 30.sp) }
         Box(
             Modifier
-                .offset(y = (-4).dp)
-                .neonPanel(12.dp, glow = true)
-                .padding(horizontal = 30.dp, vertical = 4.dp),
+                .offset(y = (-3).dp)
+                .neonPanel(14.dp, glow = true, borderColor = AppColors.Gold)
+                .padding(horizontal = 30.dp, vertical = 5.dp),
+            contentAlignment = Alignment.Center,
         ) {
-            Text(
-                sub,
-                color = AppColors.GoldLight,
-                fontSize = 22.sp,
-                fontFamily = GameFont,
-                fontWeight = FontWeight.Black,
-            )
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                GoldText(player, 31.sp)
+                Text(
+                    action,
+                    color = Color.White,
+                    fontSize = if (action.length > 18) 16.sp else 19.sp,
+                    fontFamily = GameFont,
+                    fontWeight = FontWeight.Black,
+                    textAlign = TextAlign.Center,
+                )
+                if (helper != null) {
+                    Text(
+                        helper,
+                        color = AppColors.GoldLight,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                    )
+                }
+            }
         }
     }
 }
@@ -545,20 +575,74 @@ private fun WheelResultBanner(s: GameState, vm: GameViewModel, modifier: Modifie
         SegmentType.BANKRUPT -> stringResource(R.string.ev_bankrupt) to AppColors.Red
         SegmentType.LOSE_TURN -> WheelConfig.LABEL_LOSE_TURN to AppColors.Cyan
         SegmentType.DOUBLE -> stringResource(R.string.ev_double) to AppColors.Fuchsia
-        SegmentType.JOKER -> (WheelConfig.LABEL_JOKER + "!") to AppColors.Gold
+        SegmentType.JOKER -> stringResource(R.string.pick_joker, formatScore(vm.rules.jokerPoints)) to AppColors.Gold
     }
     val player = s.currentPlayer.name.uppercase(TurkishAlphabet.LOCALE)
-    val sub = when (segment.type) {
-        SegmentType.POINTS, SegmentType.JOKER -> "$player HARF SEÇ"
-        else -> null
-    }
     Box(modifier, contentAlignment = Alignment.Center) {
         if (segment.type == SegmentType.JOKER || segment.type == SegmentType.DOUBLE) {
             val burst = remember { Animatable(0f) }
             LaunchedEffect(s.spinCount) { burst.snapTo(0f); burst.animateTo(1f, tween(1000)) }
             SparkleBurst(color, { burst.value }, Modifier.size(420.dp))
         }
-        BannerCard(title, sub, color, subtitleFontSize = 30.sp)
+        when (segment.type) {
+            SegmentType.POINTS -> PlayerActionResultBanner(
+                title = title,
+                player = player,
+                action = "HARF SEÇ",
+                accent = color,
+            )
+            SegmentType.JOKER -> PlayerActionResultBanner(
+                title = title,
+                player = player,
+                action = "HARF SEÇ · YANLIŞSA 1 HAK DAHA",
+                accent = color,
+                compactAction = true,
+            )
+            else -> BannerCard(title, null, color)
+        }
+    }
+}
+
+/** Çark durduğu anda aktif oyuncuyu ve sonraki hareketi tek bakışta anlatan büyük sonuç kartı. */
+@Composable
+private fun PlayerActionResultBanner(
+    title: String,
+    player: String,
+    action: String,
+    accent: Color,
+    compactAction: Boolean = false,
+) {
+    Column(
+        Modifier
+            .drawBehind {
+                val r = CornerRadius(24.dp.toPx())
+                for (i in 4 downTo 1) {
+                    val g = i * 5f * density
+                    drawRoundRect(
+                        accent.copy(alpha = 0.055f * (5 - i)),
+                        Offset(-g, -g),
+                        Size(size.width + g * 2, size.height + g * 2),
+                        CornerRadius(r.x + g),
+                    )
+                }
+                drawRoundRect(Brush.verticalGradient(listOf(Color(0xF7193198), Color(0xF7070D3C))), cornerRadius = r)
+                drawRoundRect(Brush.verticalGradient(listOf(Color(0x33FFFFFF), Color.Transparent), 0f, size.height * 0.42f), size = Size(size.width, size.height * 0.42f), cornerRadius = r)
+                drawRoundRect(accent, cornerRadius = r, style = Stroke(4.dp.toPx()))
+            }
+            .padding(horizontal = 54.dp, vertical = 13.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(1.dp),
+    ) {
+        GoldText(title, if (title.length > 19) 42.sp else 52.sp)
+        GoldText(player, 34.sp)
+        Text(
+            action,
+            color = Color.White,
+            fontSize = if (compactAction) 18.sp else 23.sp,
+            fontFamily = GameFont,
+            fontWeight = FontWeight.Black,
+            textAlign = TextAlign.Center,
+        )
     }
 }
 
@@ -585,21 +669,21 @@ private fun RoundCompleteDialog(s: GameState, vm: GameViewModel) {
             usePlatformDefaultWidth = false,
         ),
     ) {
-        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Box(Modifier.fillMaxSize().background(Color(0xA6060A20)), contentAlignment = Alignment.Center) {
             CelebrationLayer(trigger = "round-${s.round}-${s.eventCounter}", level = CelebrationLevel.ROUND)
             Column(
                 Modifier
                     .width(860.dp)
                     .neonPanel(26.dp, glow = true)
-                    .padding(horizontal = 42.dp, vertical = 26.dp),
+                    .padding(horizontal = 42.dp, vertical = 20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(10.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                GoldText(stringResource(R.string.round_complete), 52.sp)
+                GoldText("★ ${stringResource(R.string.round_complete)} ★", 44.sp)
                 Text(
                     s.puzzle.answer,
                     color = Color.White,
-                    fontSize = 30.sp,
+                    fontSize = 26.sp,
                     fontFamily = GameFont,
                     textAlign = TextAlign.Center,
                 )
@@ -610,19 +694,19 @@ private fun RoundCompleteDialog(s: GameState, vm: GameViewModel) {
                         fontSize = 20.sp,
                         fontFamily = GameFont,
                     )
-                    GoldText(winner.name.uppercase(TurkishAlphabet.LOCALE), 46.sp)
+                    GoldText(winner.name.uppercase(TurkishAlphabet.LOCALE), 42.sp)
                     Box(Modifier.padding(top = 2.dp, bottom = 4.dp)) {
                         PlayerScoreCard(
                             player = winner,
                             index = winnerIndex,
                             active = true,
-                            modifier = Modifier.width(360.dp),
-                            height = 86.dp,
+                            modifier = Modifier.width(380.dp),
+                            height = 76.dp,
                             showTurnLabel = false,
                         )
                     }
                 }
-                Box(Modifier.height(70.dp), contentAlignment = Alignment.Center) {
+                Box(Modifier.height(64.dp), contentAlignment = Alignment.Center) {
                     if (ready) {
                         TvButton(
                             stringResource(if (vm.isLastNormalRound()) R.string.go_final else R.string.next_round),

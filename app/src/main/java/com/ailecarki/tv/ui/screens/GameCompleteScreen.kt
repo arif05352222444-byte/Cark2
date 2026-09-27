@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -52,6 +53,7 @@ import com.ailecarki.tv.ui.theme.AppColors
 import com.ailecarki.tv.ui.theme.Dimens
 import com.ailecarki.tv.ui.theme.GameFont
 import com.ailecarki.tv.ui.viewmodel.GameViewModel
+import kotlinx.coroutines.delay
 
 private enum class PrizeReward { WISH, PENALTY, MONEY }
 
@@ -64,6 +66,14 @@ fun GameCompleteScreen(s: GameState, vm: GameViewModel, onNewGame: () -> Unit, o
     var envelopeStage by rememberSaveable(s.eventCounter) { mutableStateOf(false) }
     var selectedEnvelope by rememberSaveable(s.eventCounter) { mutableStateOf(-1) }
     val rewardOrder = remember(s.eventCounter, champion.name) { PrizeReward.entries.shuffled() }
+
+    // Büyük final zaferi önce birkaç saniye tam ekran kutlanır; ardından 3 sürpriz zarf otomatik gelir.
+    LaunchedEffect(won, s.eventCounter) {
+        if (won && !envelopeStage) {
+            delay(5600)
+            envelopeStage = true
+        }
+    }
 
     Box(Modifier.fillMaxSize()) {
         if (won) {
@@ -109,31 +119,35 @@ private fun ChampionSummary(
 ) {
     val champion = s.players[championIndex]
     val first = remember { FocusRequester() }
-    RequestFocus(first, Unit)
+    if (!won) RequestFocus(first, Unit)
 
     val pulseTransition = rememberInfiniteTransition(label = "championPulse")
     val pulse by pulseTransition.animateFloat(
         initialValue = 0.98f,
-        targetValue = 1.045f,
-        animationSpec = infiniteRepeatable(tween(900), RepeatMode.Reverse),
+        targetValue = 1.055f,
+        animationSpec = infiniteRepeatable(tween(820), RepeatMode.Reverse),
         label = "championScale",
     )
+    var actionsReady by remember { mutableStateOf(!won) }
+    LaunchedEffect(won) {
+        if (won) {
+            delay(2300)
+            actionsReady = true
+        }
+    }
 
     Column(
         Modifier
             .fillMaxSize()
             .padding(horizontal = Dimens.SafeHorizontal, vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(6.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         if (won) {
-            GoldText(stringResource(R.string.final_win_title), 54.sp)
-            Text(
+            GoldText(stringResource(R.string.final_win_title), 46.sp)
+            GoldText(
                 stringResource(R.string.final_win_sub, finalistName.uppercase(TurkishAlphabet.LOCALE)),
-                color = Color.White,
-                fontSize = 32.sp,
-                fontFamily = GameFont,
-                fontWeight = FontWeight.Black,
+                30.sp,
             )
         } else {
             Text(stringResource(R.string.final_lose_title), style = goldTextStyle(46.sp))
@@ -144,7 +158,7 @@ private fun ChampionSummary(
             PuzzleBoard(
                 s.puzzle.answer,
                 s.revealedLetters,
-                Modifier.fillMaxWidth().height(if (won) 112.dp else 130.dp),
+                Modifier.fillMaxWidth().height(if (won) 92.dp else 130.dp),
             )
         }
 
@@ -157,15 +171,18 @@ private fun ChampionSummary(
                     .padding(horizontal = 30.dp, vertical = 8.dp),
                 contentAlignment = Alignment.Center,
             ) {
-                GoldText("ŞAMPİYON ${champion.name.uppercase(TurkishAlphabet.LOCALE)}", 48.sp)
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    GoldText("★ ŞAMPİYON ★", 22.sp)
+                    GoldText(champion.name.uppercase(TurkishAlphabet.LOCALE), 44.sp)
+                }
             }
             Box(Modifier.padding(top = 4.dp, bottom = 4.dp)) {
                 PlayerScoreCard(
                     player = champion,
                     index = championIndex,
                     active = true,
-                    modifier = Modifier.width(390.dp),
-                    height = 90.dp,
+                    modifier = Modifier.width(400.dp),
+                    height = 78.dp,
                     showTurnLabel = false,
                 )
             }
@@ -183,15 +200,20 @@ private fun ChampionSummary(
 
         Row(horizontalArrangement = Arrangement.spacedBy(18.dp), modifier = Modifier.padding(top = 6.dp)) {
             if (won) {
-                TvButton(
-                    stringResource(R.string.prize_open_envelopes),
-                    onEnvelopes,
-                    Modifier.width(300.dp),
-                    primary = true,
-                    focusRequester = first,
-                )
-                TvButton(stringResource(R.string.menu_new_game), onNewGame, Modifier.width(250.dp))
-                TvButton(stringResource(R.string.main_menu), onMenu, Modifier.width(250.dp))
+                if (actionsReady) {
+                    // Final kazanıldıktan sonra akış doğrudan ödül zarflarına gider; Yeni Oyun / Ana Menü
+                    // ancak zarf açıldıktan sonra sunulur. Böylece sürpriz ödül aşaması atlanmaz.
+                    TvButton(
+                        stringResource(R.string.prize_open_envelopes),
+                        onEnvelopes,
+                        Modifier.width(380.dp),
+                        primary = true,
+                        focusRequester = first,
+                    )
+                    RequestFocus(first, actionsReady)
+                } else {
+                    Text("KUTLAMA DEVAM EDİYOR…", color = AppColors.GoldLight, fontSize = 18.sp, fontFamily = GameFont)
+                }
             } else {
                 TvButton(stringResource(R.string.menu_new_game), onNewGame, Modifier.width(300.dp), primary = true, focusRequester = first)
                 TvButton(stringResource(R.string.main_menu), onMenu, Modifier.width(300.dp))
@@ -223,11 +245,11 @@ private fun PrizeEnvelopeStage(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        GoldText("ŞAMPİYON ${champion.name.uppercase(TurkishAlphabet.LOCALE)}", 44.sp)
+        GoldText("ŞAMPİYON ${champion.name.uppercase(TurkishAlphabet.LOCALE)}", 46.sp)
         Text(
             if (selectedEnvelope < 0) stringResource(R.string.prize_pick_title) else stringResource(R.string.prize_reveal_title),
             color = Color.White,
-            fontSize = 28.sp,
+            fontSize = 30.sp,
             fontFamily = GameFont,
             fontWeight = FontWeight.Black,
         )
@@ -292,3 +314,4 @@ private fun PrizeEnvelopeStage(
         }
     }
 }
+
