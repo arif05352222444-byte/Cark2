@@ -14,6 +14,7 @@ enum class SoundId(val category: AudioCategory, val fileBase: String, val stream
     VOICE_YOUR_TURN(AudioCategory.VOICE, "your_turn"),
     VOICE_SPIN_PROMPT(AudioCategory.VOICE, "spin_prompt"),
     VOICE_WHEEL_SPINNING(AudioCategory.VOICE, "wheel_spinning"),
+    VOICE_CHOOSE_LETTER(AudioCategory.VOICE, "choose_letter"),
     VOICE_BUY_VOWEL(AudioCategory.VOICE, "buy_vowel"),
     VOICE_SOLVE(AudioCategory.VOICE, "solve"),
     VOICE_GET_READY(AudioCategory.VOICE, "get_ready"),

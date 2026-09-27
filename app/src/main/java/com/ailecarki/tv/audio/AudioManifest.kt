@@ -16,6 +16,7 @@ object AudioManifest {
         SoundId.VOICE_YOUR_TURN to listOf("voice_your_turn"),
         SoundId.VOICE_SPIN_PROMPT to listOf("voice_spin"),
         SoundId.VOICE_WHEEL_SPINNING to listOf("voice_wheel_spinning"),
+        SoundId.VOICE_CHOOSE_LETTER to listOf("voice_choose_letter"),
         SoundId.VOICE_BUY_VOWEL to listOf("voice_buy_vowel"),
         SoundId.VOICE_SOLVE to listOf("voice_solve"),
         SoundId.VOICE_GET_READY to listOf("voice_get_ready"),
