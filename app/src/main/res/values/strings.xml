@@ -130,4 +130,9 @@
     <string name="referee_type">YAZARAK GİR</string>
     <string name="referee_answer_label">DOĞRU CEVAP:</string>
     <string name="solving_banner">%1$s, CEVABI SÖYLE!</string>
+    <string name="final_given_label">VERİLEN HARFLER</string>
+    <string name="final_picks_label">SENİN HARFLERİN</string>
+    <string name="final_pick_hint">%1$d ÜNSÜZ + %2$d SESLİ HARF SEÇ</string>
+    <string name="label_consonant">ÜNSÜZ</string>
+    <string name="label_vowel">SESLİ</string>
 </resources>
