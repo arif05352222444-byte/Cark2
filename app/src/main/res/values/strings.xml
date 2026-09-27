@@ -150,7 +150,7 @@
     <string name="prize_penalty_title">CEZA HAKKI</string>
     <string name="prize_penalty_body">%1$s, %2$s için eğlenceli bir ceza seçer. Ceza ev oyunu sınırlarında uygulanır.</string>
     <string name="prize_money_title">1.000 TL ÖDÜL</string>
-    <string name="prize_money_body">%1$s oyuncularının her biri şampiyon %2$s'ya 1.000 TL verir.</string>
+    <string name="prize_money_body">%1$s oyuncularının her biri şampiyon %2$s\'ya 1.000 TL verir.</string>
 
     <!-- Uygulama açılışı: aile anma ekranı -->
     <string name="memorial_greeting">İYİ EĞLENCELER SEVGİLİ AİLEM</string>
