@@ -36,7 +36,7 @@ import com.ailecarki.tv.ui.components.CategoryPill
 import com.ailecarki.tv.ui.components.LetterKeyboard
 import com.ailecarki.tv.ui.components.PuzzleBoard
 import com.ailecarki.tv.ui.components.RequestFocus
-import com.ailecarki.tv.ui.components.TextInputDialog
+import com.ailecarki.tv.ui.components.MissingLettersInputDialog
 import com.ailecarki.tv.ui.components.TitleMarquee
 import com.ailecarki.tv.ui.components.TvButton
 import com.ailecarki.tv.ui.components.revealDurationMs
@@ -129,12 +129,11 @@ fun FinalScreen(s: GameState, vm: GameViewModel, refocusKey: Any? = null) {
     if (s.phase == GamePhase.FINAL_SOLVING && showInput) {
         var typing by remember { mutableStateOf(false) }
         if (typing) {
-            TextInputDialog(
-                title = stringResource(R.string.solve_title),
+            MissingLettersInputDialog(
+                title = stringResource(R.string.solve_missing_title),
                 subtitle = stringResource(R.string.final_time_left, secondsLeft),
-                initial = "",
-                maxLength = 40,
-                allowSpace = true,
+                answer = s.puzzle.answer,
+                revealed = s.revealedLetters,
                 onConfirm = { vm.submitFinal(it) },
                 onDismiss = { typing = false },
             )

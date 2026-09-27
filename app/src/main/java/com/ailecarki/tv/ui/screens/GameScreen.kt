@@ -47,11 +47,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ailecarki.tv.R
 import com.ailecarki.tv.domain.engine.PuzzleEngine
 import com.ailecarki.tv.domain.engine.WheelEngine
+import com.ailecarki.tv.domain.engine.TurkishAlphabet
 import com.ailecarki.tv.domain.model.GamePhase
 import com.ailecarki.tv.domain.model.GameState
 import com.ailecarki.tv.domain.model.SegmentType
 import com.ailecarki.tv.domain.rules.WheelConfig
 import com.ailecarki.tv.ui.components.BannerCard
+import com.ailecarki.tv.ui.components.PlayerScoreCard
+import com.ailecarki.tv.ui.components.CelebrationLevel
+import com.ailecarki.tv.ui.components.CelebrationLayer
 import com.ailecarki.tv.ui.components.CategoryPill
 import com.ailecarki.tv.ui.components.EventBanner
 import com.ailecarki.tv.ui.components.GameDialog
@@ -59,7 +63,7 @@ import com.ailecarki.tv.ui.components.LetterKeyboard
 import com.ailecarki.tv.ui.components.PlayerScoreRow
 import com.ailecarki.tv.ui.components.PuzzleBoard
 import com.ailecarki.tv.ui.components.RequestFocus
-import com.ailecarki.tv.ui.components.TextInputDialog
+import com.ailecarki.tv.ui.components.MissingLettersInputDialog
 import com.ailecarki.tv.ui.components.TitleMarquee
 import com.ailecarki.tv.ui.components.TvButton
 import com.ailecarki.tv.ui.components.WHEEL_REST_ROTATION
@@ -97,6 +101,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.min
 import androidx.compose.ui.zIndex
+import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.window.Dialog
 import com.ailecarki.tv.ui.components.GameIconKind
 import com.ailecarki.tv.ui.components.GoldText
 import com.ailecarki.tv.ui.components.SparkleBurst
@@ -408,12 +414,11 @@ private fun MainGameContent(s: GameState, vm: GameViewModel, refocusKey: Any?) {
         // Varsayılan: sesli söyle + hakem. Yazarak giriş yalnızca yedek.
         var typing by remember(s.eventCounter) { mutableStateOf(false) }
         if (typing) {
-            TextInputDialog(
-                title = stringResource(R.string.solve_title),
+            MissingLettersInputDialog(
+                title = stringResource(R.string.solve_missing_title),
                 subtitle = s.currentPlayer.name,
-                initial = "",
-                maxLength = 40,
-                allowSpace = true,
+                answer = s.puzzle.answer,
+                revealed = s.revealedLetters,
                 onConfirm = vm::submitSolve,
                 onDismiss = { typing = false },
             )
@@ -471,20 +476,21 @@ private fun KeyboardPanel(s: GameState, vm: GameViewModel, focusKey: Any?, keySi
 @Composable
 private fun PointsBadge(s: GameState, vm: GameViewModel) {
     val seg = s.spinSegmentIndex?.let { vm.wheel.segments.getOrNull(it) }
+    val player = s.currentPlayer.name.uppercase(TurkishAlphabet.LOCALE)
     val title: String
     val sub: String
     when {
         s.phase == GamePhase.VOWEL_SELECTION -> {
             title = stringResource(R.string.vowel_badge)
-            sub = stringResource(R.string.vowel_badge_sub, vm.rules.vowelCost)
+            sub = "$player SESLİ HARF SEÇ"
         }
         seg?.type == SegmentType.JOKER -> {
             title = WheelConfig.LABEL_JOKER
-            sub = stringResource(R.string.pick_free_letter, formatScore(vm.rules.jokerPoints))
+            sub = "$player HARF SEÇ"
         }
         seg != null -> {
             title = stringResource(R.string.points_value, formatScore(seg.value)) + if (s.doubleActive) " · 2X" else ""
-            sub = stringResource(R.string.pick_letter)
+            sub = "$player HARF SEÇ"
         }
         else -> {
             title = ""
@@ -492,14 +498,20 @@ private fun PointsBadge(s: GameState, vm: GameViewModel) {
         }
     }
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(top = 6.dp)) {
-        GoldCapsule { GoldText(title, 28.sp) }
+        GoldCapsule { GoldText(title, 30.sp) }
         Box(
             Modifier
                 .offset(y = (-4).dp)
-                .neonPanel(12.dp)
-                .padding(horizontal = 28.dp, vertical = 2.dp),
+                .neonPanel(12.dp, glow = true)
+                .padding(horizontal = 30.dp, vertical = 4.dp),
         ) {
-            Text(sub, color = Color.White, fontSize = 16.sp, fontFamily = GameFont)
+            Text(
+                sub,
+                color = AppColors.GoldLight,
+                fontSize = 22.sp,
+                fontFamily = GameFont,
+                fontWeight = FontWeight.Black,
+            )
         }
     }
 }
@@ -535,8 +547,9 @@ private fun WheelResultBanner(s: GameState, vm: GameViewModel, modifier: Modifie
         SegmentType.DOUBLE -> stringResource(R.string.ev_double) to AppColors.Fuchsia
         SegmentType.JOKER -> (WheelConfig.LABEL_JOKER + "!") to AppColors.Gold
     }
+    val player = s.currentPlayer.name.uppercase(TurkishAlphabet.LOCALE)
     val sub = when (segment.type) {
-        SegmentType.POINTS, SegmentType.JOKER -> stringResource(R.string.pick_letter)
+        SegmentType.POINTS, SegmentType.JOKER -> "$player HARF SEÇ"
         else -> null
     }
     Box(modifier, contentAlignment = Alignment.Center) {
@@ -545,7 +558,7 @@ private fun WheelResultBanner(s: GameState, vm: GameViewModel, modifier: Modifie
             LaunchedEffect(s.spinCount) { burst.snapTo(0f); burst.animateTo(1f, tween(1000)) }
             SparkleBurst(color, { burst.value }, Modifier.size(420.dp))
         }
-        BannerCard(title, sub, color)
+        BannerCard(title, sub, color, subtitleFontSize = 30.sp)
     }
 }
 
@@ -557,27 +570,72 @@ private fun RoundCompleteDialog(s: GameState, vm: GameViewModel) {
         visible = true
     }
     if (!visible) return
-    GameDialog(onDismiss = {}, dismissOnBack = false, maxWidth = 820.dp) {
-        Text(stringResource(R.string.round_complete), style = goldTextStyle(40.sp))
-        Text(s.puzzle.answer, color = AppColors.White, fontSize = 28.sp, fontWeight = FontWeight.Black, textAlign = TextAlign.Center)
-        s.roundWinnerIndex?.let {
-            Text(stringResource(R.string.round_winner, s.players[it].name), color = AppColors.GoldLight, fontSize = 22.sp, fontWeight = FontWeight.Bold)
-        }
-        PlayerScoreRow(s.players, s.roundWinnerIndex, Modifier.width(760.dp))
-        var ready by remember { mutableStateOf(false) }
-        LaunchedEffect(Unit) { delay(1200); ready = true }
-        Box(Modifier.height(64.dp), contentAlignment = Alignment.Center) {
-            if (ready) {
-                val next = remember { FocusRequester() }
-                TvButton(
-                    stringResource(if (vm.isLastNormalRound()) R.string.go_final else R.string.next_round),
-                    vm::nextRound,
-                    Modifier.width(320.dp),
-                    primary = true,
-                    focusRequester = next,
+
+    val winnerIndex = s.roundWinnerIndex
+    val winner = winnerIndex?.let { s.players.getOrNull(it) }
+    val next = remember { FocusRequester() }
+    var ready by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) { delay(1050); ready = true }
+
+    Dialog(
+        onDismissRequest = {},
+        properties = DialogProperties(
+            dismissOnBackPress = false,
+            dismissOnClickOutside = false,
+            usePlatformDefaultWidth = false,
+        ),
+    ) {
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CelebrationLayer(trigger = "round-${s.round}-${s.eventCounter}", level = CelebrationLevel.ROUND)
+            Column(
+                Modifier
+                    .width(860.dp)
+                    .neonPanel(26.dp, glow = true)
+                    .padding(horizontal = 42.dp, vertical = 26.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                GoldText(stringResource(R.string.round_complete), 52.sp)
+                Text(
+                    s.puzzle.answer,
+                    color = Color.White,
+                    fontSize = 30.sp,
+                    fontFamily = GameFont,
+                    textAlign = TextAlign.Center,
                 )
-                RequestFocus(next, Unit)
+                if (winner != null && winnerIndex != null) {
+                    Text(
+                        "TURU KAZANAN",
+                        color = AppColors.GoldLight,
+                        fontSize = 20.sp,
+                        fontFamily = GameFont,
+                    )
+                    GoldText(winner.name.uppercase(TurkishAlphabet.LOCALE), 46.sp)
+                    Box(Modifier.padding(top = 2.dp, bottom = 4.dp)) {
+                        PlayerScoreCard(
+                            player = winner,
+                            index = winnerIndex,
+                            active = true,
+                            modifier = Modifier.width(360.dp),
+                            height = 86.dp,
+                            showTurnLabel = false,
+                        )
+                    }
+                }
+                Box(Modifier.height(70.dp), contentAlignment = Alignment.Center) {
+                    if (ready) {
+                        TvButton(
+                            stringResource(if (vm.isLastNormalRound()) R.string.go_final else R.string.next_round),
+                            vm::nextRound,
+                            Modifier.width(340.dp),
+                            primary = true,
+                            focusRequester = next,
+                        )
+                        RequestFocus(next, Unit)
+                    }
+                }
             }
         }
     }
 }
+
