@@ -16,12 +16,14 @@ object WheelConfig {
     private val double = WheelSegment(SegmentType.DOUBLE, 0, LABEL_DOUBLE, 10)
     private val joker = WheelSegment(SegmentType.JOKER, 0, LABEL_JOKER, 11)
 
+    /**
+     * 12 büyük dilim (her biri 30°) — TV'den uzaktan okunur. Özel dilimler eşit aralıklı (her 3 dilimde bir).
+     * Saat yönünde: 100 · 500 · 2X · 300 · 1000 · JOKER · 400 · 750 · İFLAS · 250 · 2000 · SIRA GEÇ
+     */
     val DEFAULT: List<WheelSegment> = listOf(
-        p(500, 0), p(100, 1), p(300, 2), bankrupt,
-        p(750, 3), p(250, 4), double, p(400, 5),
-        p(1000, 6), p(200, 7), loseTurn, p(500, 1),
-        p(1500, 2), p(300, 0), joker, p(250, 3),
-        p(750, 4), bankrupt, p(400, 6), p(2000, 5),
-        p(200, 2), loseTurn, p(500, 7), p(1000, 3),
+        p(100, 0), p(500, 2), double,
+        p(300, 3), p(1000, 1), joker,
+        p(400, 4), p(750, 0), bankrupt,
+        p(250, 5), p(2000, 3), loseTurn,
     )
 }
