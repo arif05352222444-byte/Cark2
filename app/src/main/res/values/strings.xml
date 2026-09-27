@@ -35,12 +35,15 @@
     <string name="your_turn">SIRA SENDE</string>
     <string name="turn_of">%1$s, sıra sende!</string>
     <string name="action_spin">ÇARKI ÇEVİR</string>
+    <string name="action_spin_double">2X AKTİF · ÇARKI ÇEVİR</string>
     <string name="action_vowel">SESLİ HARF AL (%1$d)</string>
     <string name="action_solve">ÇÖZ</string>
     <string name="points_value">%1$s PUAN</string>
     <string name="pick_consonant_for">%1$s PUAN İÇİN HARF SEÇ</string>
-    <string name="pick_joker">JOKER: HARF DOĞRUYSA %1$s PUAN</string>
+    <string name="pick_joker">JOKER + %1$s × HARF</string>
     <string name="pick_vowel">SESLİ HARF SEÇ (−%1$d PUAN)</string>
+    <string name="joker_retry_title">JOKER · BİR HAK DAHA!</string>
+    <string name="joker_retry_sub">İlk harf yok. Bir ünsüz daha seç.</string>
     <string name="double_active">2X AKTİF</string>
     <string name="double_hint">2X! Sıradaki doğru harf çift puan. Tekrar çevir!</string>
     <string name="hint_consonant_only">Yalnızca ünsüz harfler seçilebilir</string>
@@ -111,7 +114,7 @@
     <string name="action_letter">HARF SEÇ</string>
     <string name="action_vowel_short">SESLİ HARF AL</string>
     <string name="pick_letter">Harf seç</string>
-    <string name="pick_free_letter">Ücretsiz harf seç · doğruysa %1$s puan</string>
+    <string name="pick_free_letter">Doğru harf: %1$s × adet · yanlışsa 1 kez daha seç</string>
     <string name="vowel_badge">SESLİ HARF</string>
     <string name="vowel_badge_sub">Bedeli %1$d puan</string>
     <string name="your_turn_two_lines">SIRA\nSENDE</string>
@@ -150,13 +153,13 @@
     <string name="prize_penalty_title">CEZA HAKKI</string>
     <string name="prize_penalty_body">%1$s, %2$s için eğlenceli bir ceza seçer. Ceza ev oyunu sınırlarında uygulanır.</string>
     <string name="prize_money_title">1.000 TL ÖDÜL</string>
-    <string name="prize_money_body">%1$s oyuncularının her biri şampiyon %2$s\'ya 1.000 TL verir.</string>
+    <string name="prize_money_body">%1$s oyuncularının her biri şampiyon olan %2$s oyuncusuna 1.000 TL verir.</string>
 
     <!-- Uygulama açılışı: aile anma ekranı -->
     <string name="memorial_greeting">İYİ EĞLENCELER SEVGİLİ AİLEM</string>
-    <string name="memorial_body_before_name">Oyuna başlamadan önce…\n\nBugün aramızda olamasalar da sevgileri, emekleri ve güzel hatıralarıyla daima bizimle olan tüm sevdiklerimizi;\n\nbaşta kıymetli babamız </string>
+    <string name="memorial_body_before_name">Oyuna başlamadan önce…\n\nBugün aramızda olamasalar da sevgileri, emekleri ve güzel hatıralarıyla daima bizimle olan tüm sevdiklerimizi anıyoruz.</string>
     <string name="memorial_name">Muammer Uğurluel</string>
-    <string name="memorial_body_after_name"> olmak üzere,\nebediyete uğurladığımız tüm aile büyüklerimizi\nsevgi, özlem ve rahmetle anıyoruz.</string>
+    <string name="memorial_body_after_name">Başta kıymetli babamız %1$s olmak üzere, ebediyete uğurladığımız tüm aile büyüklerimizi sevgi, özlem ve rahmetle anıyoruz.</string>
     <string name="memorial_fatiha">Ruhları için bir Fâtiha okuyalım.</string>
     <string name="memorial_accept">Allah kabul etsin.</string>
     <string name="memorial_amen">ÂMİN</string>
