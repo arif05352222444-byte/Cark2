@@ -4,6 +4,7 @@ package com.ailecarki.tv.domain.model
 sealed interface GameEvent {
     data class LetterFound(val letter: Char, val count: Int, val points: Int) : GameEvent
     data class LetterMissing(val letter: Char) : GameEvent
+    data class JokerRetry(val letter: Char, val attemptsLeft: Int) : GameEvent
     data class VowelBought(val letter: Char, val count: Int, val cost: Int) : GameEvent
     data object Bankrupt : GameEvent
     data object LoseTurn : GameEvent

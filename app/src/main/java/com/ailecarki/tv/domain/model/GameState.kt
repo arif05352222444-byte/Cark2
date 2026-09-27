@@ -19,6 +19,8 @@ data class GameState(
     /** Her çevirmede artar; UI animasyon anahtarı. */
     val spinCount: Int = 0,
     val doubleActive: Boolean = false,
+    /** Joker seçildiyse kalan ücretsiz ünsüz denemesi. İlk seçim + bir tekrar = 2. */
+    val jokerAttemptsRemaining: Int = 0,
     val lastEvent: GameEvent? = null,
     val eventCounter: Int = 0,
     val lastRevealedLetter: Char? = null,
