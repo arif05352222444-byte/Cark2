@@ -135,4 +135,30 @@
     <string name="final_pick_hint">%1$d ÜNSÜZ + %2$d SESLİ HARF SEÇ</string>
     <string name="label_consonant">ÜNSÜZ</string>
     <string name="label_vowel">SESLİ</string>
+
+    <!-- Eksik harfli hızlı yazma -->
+    <string name="solve_missing_title">EKSİK HARFLERİ GİR</string>
+    <string name="input_missing_hint">Açılmış harfler hazır. Sadece boş kutuları doldur.</string>
+
+    <!-- Final sonrası sürpriz zarflar -->
+    <string name="prize_open_envelopes">ÖDÜL ZARFLARI</string>
+    <string name="prize_pick_title">3 ZARFTAN BİRİNİ SEÇ</string>
+    <string name="prize_pick_subtitle">Her oyunda ödüller yeniden karıştırılır.</string>
+    <string name="prize_reveal_title">ZARFIN AÇILDI!</string>
+    <string name="prize_wish_title">DİLEK HAKKI</string>
+    <string name="prize_wish_body">%1$s, %2$s oyuncularından bir dilek ister. Oyun başında kabul edilen sınırlar içinde diğer oyuncular “EVET” der.</string>
+    <string name="prize_penalty_title">CEZA HAKKI</string>
+    <string name="prize_penalty_body">%1$s, %2$s için eğlenceli bir ceza seçer. Ceza ev oyunu sınırlarında uygulanır.</string>
+    <string name="prize_money_title">1.000 TL ÖDÜL</string>
+    <string name="prize_money_body">%1$s oyuncularının her biri şampiyon %2$s'ya 1.000 TL verir.</string>
+
+    <!-- Uygulama açılışı: aile anma ekranı -->
+    <string name="memorial_greeting">İYİ EĞLENCELER SEVGİLİ AİLEM</string>
+    <string name="memorial_body_before_name">Oyuna başlamadan önce…\n\nBugün aramızda olamasalar da sevgileri, emekleri ve güzel hatıralarıyla daima bizimle olan tüm sevdiklerimizi;\n\nbaşta kıymetli babamız </string>
+    <string name="memorial_name">Muammer Uğurluel</string>
+    <string name="memorial_body_after_name"> olmak üzere,\nebediyete uğurladığımız tüm aile büyüklerimizi\nsevgi, özlem ve rahmetle anıyoruz.</string>
+    <string name="memorial_fatiha">Ruhları için bir Fâtiha okuyalım.</string>
+    <string name="memorial_accept">Allah kabul etsin.</string>
+    <string name="memorial_amen">ÂMİN</string>
+
 </resources>
