@@ -48,13 +48,13 @@ import kotlin.math.sin
 
 /** Dönen diskin yarıçapı / görünüm yarıçapı. wheel_frame.webp'in şeffaf iç dairesi ~0,80–0,82 → disk çerçevenin altına biraz girer. */
 private const val DISK_RATIO = 0.83f
-private const val HUB_RATIO = 0.53f       // yeni 3D göbek biraz daha tok görünür
-private const val POINTER_H_RATIO = 0.32f // geniş 3D ibre için daha kısa yükseklik
+private const val HUB_RATIO = 0.56f       // merkez göbek TV'de daha tok ve premium görünür
+private const val POINTER_H_RATIO = 0.31f // ibre segment içine net bakar, dış halkayı kapatmaz
 /** Ekranlarda çarkın durduğu varsayılan açı (100 dilimi ibrenin altında). Yazılar bu konumda dik durur. */
 const val WHEEL_REST_ROTATION = -15f
 /** Yazıların yerleşebileceği halka (görünüm yarıçapına oran): göbeğin dışı … çerçevenin içi. */
-private const val LABEL_INNER = 0.29f
-private const val LABEL_OUTER = 0.70f
+private const val LABEL_INNER = 0.31f
+private const val LABEL_OUTER = 0.655f
 /** Büyük harflerde satır kutusunun üst/alt boşluğu harfe ait değil → sığdırmada kutu yüksekliğinin bu oranı esas alınır. */
 private const val GLYPH_HEIGHT = 0.76f
 
@@ -142,6 +142,10 @@ fun WheelView(
             val diskR = r * DISK_RATIO
             val topLeft = Offset(c.x - diskR, c.y - diskR)
             val arcSize = Size(diskR * 2, diskR * 2)
+            // Disk gövdesi: alt kısımda koyu metal "kalınlık" ve iç altın bevel, böylece çark düz görünmez.
+            drawCircle(Color(0xAA050712), diskR * 1.008f, Offset(c.x, c.y + r * 0.022f))
+            drawCircle(Color(0xFF4E2800), diskR * 1.002f, c, style = Stroke(7.dp.toPx() * k))
+            drawCircle(Color(0xFFFFD46B), diskR * 0.987f, c, style = Stroke(2.2.dp.toPx() * k))
             segments.forEachIndexed { i, seg ->
                 val base = segmentColor(seg)
                 val brush = Brush.radialGradient(
@@ -152,6 +156,19 @@ fun WheelView(
                     center = c, radius = diskR,
                 )
                 drawArc(brush, -90f + i * sweep, sweep, true, topLeft, arcSize)
+                // Hafif cam/gloss şeridi; her dilimde üst yüzeyde yansıma hissi verir.
+                drawArc(
+                    Brush.linearGradient(
+                        listOf(Color(0x55FFFFFF), Color.Transparent, Color(0x18000000)),
+                        start = Offset(c.x - diskR, c.y - diskR),
+                        end = Offset(c.x + diskR, c.y + diskR),
+                    ),
+                    -90f + i * sweep,
+                    sweep,
+                    true,
+                    topLeft,
+                    arcSize,
+                )
             }
             if (highlightIndex != null && highlightIndex in segments.indices) {
                 val start = -90f + highlightIndex * sweep
@@ -174,10 +191,10 @@ fun WheelView(
                 val label = wheelLabel(seg)
                 val longest = label.split('\n').maxOf { it.length }
                 val base = when {
-                    '\n' in label -> 20f
-                    longest >= 5 -> 22f
-                    longest == 4 -> 28f
-                    else -> 32f
+                    '\n' in label -> 19f
+                    longest >= 5 -> 21f
+                    longest == 4 -> 27f
+                    else -> 31f
                 } * k
                 val dark = darkLabel(seg)
                 val phiWorld = mid + WHEEL_REST_ROTATION
@@ -222,11 +239,11 @@ fun WheelView(
             val frameTopLeft = IntOffset((c.x - r).roundToInt(), (c.y - r).roundToInt())
             drawBitmap(frame, frameTopLeft, IntSize(frameSide, frameSide))
             // Ampuller yavaşça parlayıp söner: çerçevenin aydınlatılmış kopyası üstüne eklenir
-            drawBitmap(frame, frameTopLeft, IntSize(frameSide, frameSide), alpha = 0.10f + 0.34f * glow, blend = BlendMode.Plus)
+            drawBitmap(frame, frameTopLeft, IntSize(frameSide, frameSide), alpha = 0.18f + 0.42f * glow, blend = BlendMode.Plus)
             // LED'lerin TV'den daha net seçilmesi için sıcak dış hale.
             drawCircle(
-                Color(0xFFFFC52E).copy(alpha = 0.08f + 0.08f * glow),
-                r * 0.94f, c, style = Stroke((7f + 3f * glow).dp.toPx()),
+                Color(0xFFFFC52E).copy(alpha = 0.13f + 0.12f * glow),
+                r * 0.945f, c, style = Stroke((9f + 4f * glow).dp.toPx()),
             )
             // Göbek
             val hubSide = (r * HUB_RATIO).roundToInt()
@@ -234,7 +251,7 @@ fun WheelView(
             // İbre: ucu diskin üst kenarının biraz içinde
             val ph = r * POINTER_H_RATIO
             val pw = ph * (pointer.width.toFloat() / pointer.height.toFloat())
-            val tipY = c.y - diskR + r * 0.07f
+            val tipY = c.y - diskR + r * 0.085f
             drawBitmap(
                 pointer,
                 IntOffset((c.x - pw / 2f).roundToInt(), (tipY - ph).roundToInt()),

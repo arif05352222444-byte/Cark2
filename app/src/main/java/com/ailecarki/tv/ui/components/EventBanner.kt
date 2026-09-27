@@ -141,6 +141,7 @@ private fun bannerAccent(e: GameEvent): Color = when (e) {
     is GameEvent.LetterFound -> AppColors.Gold
     is GameEvent.VowelBought -> if (e.count > 0) AppColors.Gold else AppColors.Red
     is GameEvent.LetterMissing, GameEvent.Bankrupt, is GameEvent.WrongAnswer -> AppColors.Red
+    is GameEvent.JokerRetry -> AppColors.Gold
     GameEvent.LoseTurn -> AppColors.Cyan
     GameEvent.DoubleActivated -> AppColors.Fuchsia
     is GameEvent.CorrectAnswer -> AppColors.Green
@@ -152,6 +153,7 @@ private fun bannerTexts(e: GameEvent, next: String): Pair<String, String?> = whe
     is GameEvent.LetterFound -> stringResource(R.string.ev_letters_found, e.count) to
         stringResource(R.string.ev_plus_points, formatScore(e.points))
     is GameEvent.LetterMissing -> stringResource(R.string.ev_letter_missing, e.letter.toString()) to next
+    is GameEvent.JokerRetry -> stringResource(R.string.joker_retry_title) to stringResource(R.string.joker_retry_sub)
     is GameEvent.VowelBought ->
         (if (e.count > 0) stringResource(R.string.ev_letters_found, e.count)
         else stringResource(R.string.ev_letter_missing, e.letter.toString())) to stringResource(R.string.ev_vowel_cost, e.cost)

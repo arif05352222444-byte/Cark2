@@ -65,6 +65,7 @@ fun PlayerScoreCard(
     active: Boolean,
     modifier: Modifier = Modifier,
     doubleBadge: Boolean = false,
+    jokerBadge: Boolean = false,
     height: Dp = 64.dp,
     showTurnLabel: Boolean = false,
 ) {
@@ -98,7 +99,7 @@ fun PlayerScoreCard(
                 .fillMaxWidth()
                 .height(height)
                 .graphicsLayer {
-                    val s = pulse.value * (1f + 0.075f * activeAnim)
+                    val s = pulse.value * (1f + 0.095f * activeAnim)
                     scaleX = s
                     scaleY = s
                     translationX = shake.value * density
@@ -106,11 +107,11 @@ fun PlayerScoreCard(
                 .drawBehind {
                     val r = CornerRadius(16.dp.toPx())
                     if (activeAnim > 0f) {
-                        val glowPulse = 0.58f + 0.42f * blink
+                        val glowPulse = 0.50f + 0.50f * blink
                         for (i in 6 downTo 1) {
                             val g = i * 4.5f * density
                             drawRoundRect(
-                                AppColors.Gold.copy(alpha = (0.05f + 0.045f * (6 - i)) * activeAnim * glowPulse),
+                                AppColors.Gold.copy(alpha = (0.07f + 0.055f * (6 - i)) * activeAnim * glowPulse),
                                 Offset(-g, -g),
                                 Size(size.width + g * 2, size.height + g * 2),
                                 CornerRadius(r.x + g),
@@ -126,7 +127,7 @@ fun PlayerScoreCard(
                         cornerRadius = r,
                     )
                     if (activeAnim > 0f) {
-                        val bw = (5.5f + 3.5f * blink) * density
+                        val bw = (6.5f + 4.5f * blink) * density
                         drawRoundRect(lerp(AppColors.Gold, Color.White, 0.22f * blink), cornerRadius = r, style = Stroke(bw))
                         drawRoundRect(Color(0xFF7A4200), cornerRadius = r, style = Stroke(1.2f * density))
                     } else {
@@ -151,7 +152,7 @@ fun PlayerScoreCard(
                     Text(
                         player.name,
                         color = if (active) Color.White else Color(0xFFF3F6FF),
-                        fontSize = if (active) 18.sp else 14.sp,
+                        fontSize = if (active) 21.sp else 14.sp,
                         fontFamily = if (active) GameFont else null,
                         fontWeight = FontWeight.Bold,
                         maxLines = 1,
@@ -166,17 +167,17 @@ fun PlayerScoreCard(
                     )
                 }
             }
-            if (doubleBadge) {
+            if (doubleBadge || jokerBadge) {
                 Text(
-                    "2X",
-                    color = Color.White,
-                    fontSize = 13.sp,
+                    if (jokerBadge) "JOKER +1.000" else "2X",
+                    color = if (jokerBadge) AppColors.Navy else Color.White,
+                    fontSize = if (jokerBadge) 10.sp else 13.sp,
                     fontFamily = GameFont,
                     modifier = Modifier
                         .align(Alignment.TopEnd)
                         .padding(top = 4.dp)
-                        .background(AppColors.Fuchsia, RoundedCornerShape(8.dp))
-                        .border(1.5.dp, Color(0xFFFFB8F0), RoundedCornerShape(8.dp))
+                        .background(if (jokerBadge) AppColors.GoldLight else AppColors.Fuchsia, RoundedCornerShape(8.dp))
+                        .border(1.5.dp, if (jokerBadge) AppColors.Gold else Color(0xFFFFB8F0), RoundedCornerShape(8.dp))
                         .padding(horizontal = 6.dp, vertical = 1.dp),
                 )
             }
@@ -186,7 +187,7 @@ fun PlayerScoreCard(
             Box(
                 Modifier
                     .align(Alignment.TopCenter)
-                    .offset(y = (-34).dp)
+                    .offset(y = (-38).dp)
                     .graphicsLayer {
                         alpha = 0.78f + 0.22f * blink
                         val s = 0.96f + 0.07f * blink
@@ -200,15 +201,15 @@ fun PlayerScoreCard(
                         drawRoundRect(Brush.verticalGradient(listOf(Color(0xFF1739A0), Color(0xFF071449))), cornerRadius = r)
                         drawRoundRect(AppColors.GoldLight, cornerRadius = r, style = Stroke((2.5f + 1.5f * blink) * density))
                     }
-                    .padding(horizontal = 15.dp, vertical = 5.dp),
+                    .padding(horizontal = 18.dp, vertical = 6.dp),
                 contentAlignment = Alignment.Center,
             ) {
-                Text("SIRA SENDE", color = Color.White, fontFamily = GameFont, fontSize = 15.sp, textAlign = TextAlign.Center)
+                Text("SIRA SENDE", color = Color.White, fontFamily = GameFont, fontSize = 18.sp, textAlign = TextAlign.Center)
             }
             Text(
                 "▼",
                 color = AppColors.Gold,
-                fontSize = 20.sp,
+                fontSize = 24.sp,
                 modifier = Modifier.align(Alignment.TopCenter).offset(y = (-15).dp),
             )
         }
@@ -239,6 +240,7 @@ fun PlayerScoreRow(
     activeIndex: Int?,
     modifier: Modifier = Modifier,
     doubleActive: Boolean = false,
+    jokerActive: Boolean = false,
     showTurnBadge: Boolean = false,
     height: Dp = 64.dp,
 ) {
@@ -258,6 +260,7 @@ fun PlayerScoreRow(
                     i == activeIndex,
                     Modifier.width(cardW),
                     doubleBadge = doubleActive && i == activeIndex,
+                    jokerBadge = jokerActive && i == activeIndex,
                     height = height,
                     showTurnLabel = showTurnBadge && i == activeIndex,
                 )
