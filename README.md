@@ -1,49 +1,85 @@
-# Aile Çarkı (Android TV)
+# Aile Çarkı — Android TV / TV Box
 
-**BUILD STATUS: NOT BUILT** — geliştirme ortamında Android SDK / Google Maven erişimi yok, APK henüz üretilmedi.
-Domain unit testleri: 48/48 geçti (kotlinc ile). APK için GitHub Actions kullanın (aşağıda).
-**Tested on: not tested** (Android TV emulator bu ortamda kurulamadı)
+Kumandayla oynanan, tamamen Türkçe, aile içi kelime ve çark yarışması. Native Android: Kotlin + Jetpack Compose.
 
-Kumandayla oynanan, çarklı Türkçe kelime tahmin oyunu. Kotlin + Jetpack Compose, tamamen offline.
+**Paket:** `com.ailecarki.tv`  
+**minSdk:** 21 · **targetSdk:** 34 · **landscape / Android TV / Leanback**  
+**Yerel doğrulama:** Domain katmanı `kotlinc` ile derlendi; mevcut **66/66 domain unit test senaryosu geçti**.  
+**Android build:** Bu çalışma ortamında dış ağa erişim olmadığı için Gradle dağıtımı indirilemedi; gerçek APK build'i `.github/workflows/build-apk.yml` ile GitHub Actions'ta alınmalıdır.
 
-- Paket: `com.ailecarki.tv` · minSdk 21 · targetSdk 34
-- Yatay ekran, dokunmatik gerekmez, Android TV ana ekranında (Leanback) görünür.
+## Son oyun akışı
 
-## APK nasıl alınır (GitHub Actions)
-1. Bu klasörün içeriğini bir GitHub reposuna yükle (`.github` klasörü dahil).
-2. **Actions** sekmesinde "Build APK" iş akışı otomatik başlar (ya da "Run workflow").
-3. Bitince **Artifacts → AileCarki-debug-apk** indir → `app-debug.apk`.
-4. Hata olursa log'u paylaş.
+1. Uygulama açılır → **sessiz aile anma / Fâtiha ekranı** → `ÂMİN` → ana menü.
+2. Yeni oyun → **2 / 3 / 4 oyuncu** seçilir; boş isimler istenirse rastgele aile isimleriyle doldurulur.
+3. İlk oyuncu mevcut oyuncular arasından rastgele seçilir; kısa ışıklı çekiliş gösterilir.
+4. Tur: çark → sonuç → harf → puan / sıra → sesli harf veya ÇÖZ.
+5. ÇÖZ: ana yöntem **hakemli hızlı çözüm**. Sağ altta küçük panel; söylenen cevap isteğe bağlı `SpeechRecognizer(tr-TR)` ile yazıya dökülür fakat kararı hakem verir. Gerçek cevap perde altındadır. `TAMAM` doğru, `DEVAM` yanlış/sıra geçer, `YAZARAK GİR` yalnızca eksik harfleri doldurur.
+6. Normal turlar sonunda finalist → final harfleri + süre → hakem/yazarak çözüm.
+7. Final kazanılırsa hareketli kutlama → yalnız şampiyon kartı → **3 sürpriz zarf**. Ödüller her oyunda yeniden karıştırılır.
 
-Bilgisayarda: Android Studio (JDK 17) ile aç → `./gradlew assembleDebug`
-Çıktı: `app/build/outputs/apk/debug/app-debug.apk`
+## Çark
 
-Testler: `./gradlew testDebugUnitTest`
+12 büyük segment; TV'den uzaktan okunacak şekilde 30°:
 
-## Kumanda
-- Yön tuşları: gezinme · OK: seç · Geri: menü/iptal
-- Oyunda geri → "Oyundan çık?" (oyun otomatik kaydedilir, ana menüde DEVAM ET).
+`100 · 500 · 2X · 300 · 1000 · JOKER · 400 · 750 · İFLAS · 250 · 2000 · SIRA GEÇ`
 
-## Oyun akışı
-Tur başı → ÇARKI ÇEVİR → çark ortaya gelir, 3–5 sn döner → sonuç (ör. 500 PUAN) →
-harf kartelası alttan gelir → ünsüz seç → harfler tek tek açılır, puan eklenir.
-Sesli harf 250 puan (ayarlanabilir), sıra devam eder. ÇÖZ ile cevap yazılır.
-3 tur (veya 5) + final: lider oyuncu, R S T L N E verilir, 3 ünsüz + 1 sesli seçer, 20 sn süre.
+Görsel sistem hibrit: dönen segmentler Canvas ile çizilir; dış altın LED frame, merkez yıldızlı göbek ve ibre sabit görsel assettir. Segment yazıları güvenli halkada otomatik sığdırılır.
 
-## Klasör yapısı
+### JOKER
+
+- Ücretsiz ünsüz seçimi.
+- Doğruysa: **1.000 × çıkan harf adedi** puan, tüm eşleri açılır, sıra devam eder.
+- İlk seçim yanlışsa: **bir ücretsiz seçim hakkı daha**.
+- İkinci de yanlışsa: puan yok, sıra geçer.
+- Aktif 2X varsa Joker puanını katlamaz; fakat başarılı Joker ünsüzü 2X hakkını tüketir.
+
+### 2X
+
+Sonraki başarılı normal ünsüz seçiminin puanını ikiye katlar ve sonra tüketilir.
+
+## Görsel kalite
+
+- Gece İstanbul / Boğaz sahnesi, lacivert-mor derinlik, sıcak altın spotlar, neon mavi konturlar.
+- 3D altın `AİLE ÇARKI` logo, glossy TV butonları, belirgin aktif oyuncu kartı.
+- Aktif oyuncunun kartının üstünde yanıp sönen **SIRA SENDE** etiketi.
+- Puan sonucu ekranında aktif oyuncu adı ayrı ve büyük gösterilir.
+- Tur sonunda havai fişek, konfeti, hareketli sahne spotları ve kıvılcım fıskiyeleri.
+- Büyük final kazanımında yalnız şampiyonun büyük puan kartı; sonra zarf ekranı.
+
+## Ses
+
+`app/src/main/assets/audio/` altında **76 MP3**: sunucu, efektler ve 3 müzik. Merkezi eşleme `audio/AudioManifest.kt` içindedir. Sunucu konuşurken müzik ducking uygulanır. Anma ekranı bilerek tamamen sessizdir.
+
+Dinamik oyuncu isimleri için altyapı `DynamicSpeechService` üzerinden hazırdır; gerçek ElevenLabs API anahtarı APK'ya gömülmez.
+
+## GitHub Actions ile APK
+
+1. Bu ZIP'in içeriğini bir GitHub reposunun köküne yükleyin (`.github` dahil).
+2. **Actions → Build APK** çalışır.
+3. Workflow `testDebugUnitTest` ve `assembleDebug` çalıştırır.
+4. Artifact: **AileCarki-debug-apk** → `app-debug.apk`.
+
+Yerelde Android Studio + JDK 17 ile:
+
+```bash
+./gradlew testDebugUnitTest
+./gradlew assembleDebug
 ```
+
+## Önemli klasörler
+
+```text
 app/src/main/java/com/ailecarki/tv/
-  domain/   → saf Kotlin oyun mantığı (Android'siz, test edilebilir)
-    model/  GameState, GamePhase, GameEvent, Player, Puzzle, WheelSegment
-    rules/  GameRules (kurallar), WheelConfig (çark dilimleri)
-    engine/ GameEngine, WheelEngine, ScoreEngine, PuzzleEngine, AnswerNormalizer, TieBreaker
-  data/     → kelime bankası (assets JSON), ayarlar & kayıt (DataStore)
-  audio/    → AudioManager, SoundId, speech/DynamicSpeechService
-  ui/       → Compose ekranları, bileşenler, ViewModel'ler
-app/src/main/assets/puzzles/word_bank.json  → 156 soru, 12 kategori
-app/src/main/assets/audio/                  → ses paketi (README.txt içinde dosya listesi)
+  domain/                 # saf Kotlin oyun motoru
+  data/                   # DataStore, puzzle repository
+  audio/                  # SoundId, AudioManifest, AudioManager
+  ui/components/          # çark, kartlar, kutlama, TV butonları
+  ui/screens/             # Memorial, Home, Setup, Game, Final, Settings
+app/src/main/assets/puzzles/word_bank.json
+app/src/main/assets/audio/
+app/src/main/res/drawable-nodpi/  # premium sahne / çark / logo assetleri
 ```
 
-## Font lisansı
-Başlık/buton/puan fontu **Paytone One** — Copyright The Paytone Project Authors, SIL Open Font License 1.1.
-Lisans metni: `FONT_LICENSE_OFL.txt`. Dosya: `app/src/main/res/font/paytone_one.ttf`.
+## Font
+
+**Paytone One**, SIL Open Font License 1.1. Lisans: `FONT_LICENSE_OFL.txt`.

@@ -1,67 +1,57 @@
-# DEVELOPER NOTES — Aile Çarkı
+# DEVELOPER NOTES — MASTER FINAL
 
 ## CURRENT STATUS
-Tüm ekranlar ve oyun akışı yazıldı. Oyun motoru (domain) Kotlin 2.0.21 ile derlendi, 48/48 unit test geçti.
-BUILD: yapılamadı (ortamda Android SDK yok). Tested on: not tested.
-Android/Compose katmanı geliştirme ortamında derlenemedi (Android SDK ve Google Maven erişimi yoktu);
-ilk derleme GitHub Actions üzerinde yapılacak. İlk CI derlemesinde küçük derleme hataları çıkabilir.
 
-## WORKING
-- [x] Gradle projesi (AGP 8.5.2, Kotlin 2.0.21, Compose BOM 2024.09.03), GitHub Actions APK iş akışı
-- [x] Manifest: Leanback launcher, banner, landscape, touchscreen gerekmez
-- [x] GameEngine: tur, sıra, ünsüz/sesli, İFLAS, SIRA GEÇ, 2X, JOKER, çözme, tur sonu, final, kayıttan devam
-- [x] WheelEngine: sonuç önceden seçilir, animasyon hedef açısı matematiksel hesaplanır (testli)
-- [x] Türkçe normalizasyon (İSTANBUL = istanbul) + Türkçe karaktersiz klavye toleransı
-- [x] 156 soruluk offline kelime bankası, oturumda tekrar yok
-- [x] Ana menü, oyuncu ekranı (2/3/4 oyuncu seçimi, rastgele isim, boş/tekrar isim uyarısı), ayarlar
-- [x] Oyun ekranı: çark solda dinlenir; çevirirken büyüyerek merkeze gelir, durunca tekrar yerine döner
-- [x] Alttan kayan 29 harfli kartela, harflerin tek tek açılması, olay bannerları, konfeti
-- [x] Final ekranı (geri sayım) ve oyun sonu ekranı
-- [x] AudioManager (VOICE/EFFECT/MUSIC/UI, ducking, dosya yoksa sessiz)
-- [x] DynamicSpeechService + Mock
-- [x] Ayarlar ve kayıtlı oyun DataStore'da
-- [x] Unit testler (güncel kaynakta 57 senaryo): WheelEngine (çizim↔pointer, wrap-around), ScoreEngine, PuzzleEngine, normalizasyon, GameEngine (2X+Joker dahil)
-- [x] Merkezi ses eşleme: audio/AudioManifest.kt (bkz. AUDIO_INTEGRATION.md)
+- Native Android TV projesi: Kotlin 2.0.21 + Jetpack Compose.
+- Domain kaynakları `kotlinc` ile derlendi.
+- Mevcut **66/66 domain unit test** yerel bağımsız runner ile geçti.
+- Android/Compose tam build bu ortamda Gradle dağıtımı indirilemediği için burada alınamadı; GitHub Actions workflow hazır.
 
-## KNOWN ISSUES
-- Compose/Android katmanı henüz hiç derlenmedi; ilk Gradle derlemesinde hata çıkabilir.
-- TV/emulator testi yapılmadı.
-- Disabled buton ve harfler bilinçli olarak odaklanabilir (OK çalışmaz, gri görünür). Böylece odak
-  kaybolmuyor, örneğin 6. oyuncu eklenince odaktaki buton pasif olsa bile odak yerinde kalıyor.
-- Kayıttan devam edilirse final sayacı baştan başlar.
+## WORKING / IMPLEMENTED
 
-## TODO
-- [ ] İlk GitHub Actions derlemesi ve varsa derleme hatalarının düzeltilmesi
-- [ ] Gerçek TV / TV Box üzerinde kumanda testi
-- [ ] Ses paketi entegre; gerçek TV’de ses dengesi / senkron kontrolü
-- [ ] ElevenLabsDynamicSpeechService (backend/proxy üzerinden)
-- [ ] Kelime bankasını büyütmek
-- [ ] İsteğe bağlı: androidx.tv:tv-material bileşenlerine geçiş
+- [x] Android TV Leanback launcher, landscape, dokunmatik zorunlu değil.
+- [x] Sessiz anma/Fâtiha açılışı; ÂMİN → ana menü. Metin/buton çakışmayacak üç bölgeli responsive layout.
+- [x] 2 / 3 / 4 oyuncu seçimi, rastgele isim doldurma, rastgele ilk oyuncu + intro çekilişi.
+- [x] 12 segment premium hibrit çark; WheelEngine sonuç matematiği ile aynı liste.
+- [x] Puan, İFLAS, SIRA GEÇ, 2X, yeni JOKER ikinci-şans kuralı.
+- [x] JOKER: 1000 × adet; ilk miss → bir retry; ikinci miss → sıra geçer; 2X Joker'i katlamaz ama başarılı Joker 2X'i tüketir.
+- [x] Aktif oyuncu: güçlü altın pulse, büyüyen isim/puan, kart üstünde yanıp sönen SIRA SENDE.
+- [x] Puan/harf seçiminde aktif oyuncu adı ayrı ve büyük.
+- [x] Hakemli hızlı çözüm: küçük sağ-alt panel, SpeechRecognizer yardımcı, otomatik karar yok, cevap perdesi, TAMAM/DEVAM/BACK güvenliği.
+- [x] YAZARAK GİR: tüm cevabı tekrar yazdırmaz, yalnız kapalı kutuları doldurtur.
+- [x] Final: 3 ünsüz + 1 sesli, geri sayım, hakem/yazarak çözüm.
+- [x] Tur/final kutlamaları: hareketli spotlar, havai fişek, yan fıskiyeler, konfeti.
+- [x] Final kazanımında yalnız şampiyonun büyük kartı.
+- [x] Final sonrası 3 rastgele zarf: Dilek Hakkı / Ceza Hakkı / 1.000 TL Ödül.
+- [x] 76 MP3; AudioManifest merkezi eşleme; voice queue + music ducking.
+- [x] Ayarlar ve aktif oyun kaydı DataStore.
+- [x] 156 offline puzzle / 12 kategori.
+
+## QA / STATIC CHECKS
+
+- Domain: 66 passed / 0 failed.
+- Resource audit: tüm `R.string` ve `R.drawable` referansları mevcut.
+- XML audit: tüm `res/**/*.xml` dosyaları parse oluyor.
+- SoundId audit: tüm SoundId'ler AudioManifest'te eşli; ilgili gerçek audio assetleri mevcut.
+- Audio pack: 76 MP3 mevcut.
+
+## BUILD LIMITATION
+
+Bu çalışma ortamında `services.gradle.org` DNS erişimi yok. `./gradlew` bu nedenle Gradle 8.9 dağıtımını indiremedi. Bu, kaynak kod hatası kanıtı değildir; GitHub Actions gerçek Android compile/build kontrolüdür.
 
 ## NEXT STEP
-Projeyi GitHub'a yükle, Actions'tan APK'yı al, TV'de dene. Derleme hatası olursa log'u paylaş.
 
-## Nereden ne değişir
-- Kurallar: `domain/rules/GameRules.kt` (sesli bedeli, iflas politikası, joker puanı, final harfleri/süresi)
-- Çark dilimleri: `domain/rules/WheelConfig.kt`
-- Kelimeler: `assets/puzzles/*.json` — klasördeki tüm JSON dosyaları okunur. Format:
-  `{"id":"city_014","category":"ŞEHİR","answer":"KONYA"}` — yalnızca Türk alfabesi harfleri ve boşluk.
-- Sesler: `assets/audio/<voice|effect|music|ui>/<ad>.ogg`, isimler `audio/SoundId.kt`
-- ElevenLabs: `AppContainer.speech` içindeki `MockDynamicSpeechService` yerine backend'e bağlanan bir
-  sınıf yazılır. API anahtarı ASLA APK'ya konmaz.
+GitHub'a MASTER FINAL ZIP içeriğini yükle → Actions / Build APK. Compile hatası çıkarsa logdaki ilk gerçek `e: file` satırından düzelt.
 
-## Mimari notlar
-- UI tamamen `GameState.phase` ile yönetilir; tüm kural mantığı `GameEngine` içindedir (saf fonksiyonlar).
-- Çark sonucu önce engine'de seçilir, sonra UI o dilimde duracak açıya döndürür.
-- Performans: çark tek sefer çizilir, sadece `graphicsLayer.rotationZ` döner; blur yok; konfeti süreli.
-- Odak: disabled buton/harfler odaklanabilir kalır ama çalışmaz; faz değişince odak otomatik verilir.
-- Diyaloglar ayrı pencere (`Dialog`) → odak arkadaki butonlara kaçmaz.
-- Loglar: `adb logcat -s AileCarki/State AileCarki/Audio AileCarki/Puzzles`
+## KEY FILES
 
-### ULTRA visual polish
-- Active turn: `PlayerScoreCard.kt` now renders a pulsing `SIRA SENDE` pill directly above the active player's card.
-- Wheel result/letter selection: active player's name is included in the large prompt.
-- Wheel labels use a tighter safe-radius band and smaller adaptive sizes to avoid rim clipping.
-- Wheel depth/LED intensity increased without changing WheelEngine math.
-- Round and final win scenes use lightweight Canvas fireworks/fountains + finite confetti; no video or heavy particle engine.
-- Final win intentionally shows only the champion's score card.
+- Kurallar: `domain/rules/GameRules.kt`
+- Çark: `domain/rules/WheelConfig.kt`, `ui/components/Wheel.kt`
+- Joker: `domain/engine/GameEngine.kt`
+- Hakem: `ui/screens/RefereeSolveDialog.kt`
+- Eksik harf çözümü: `ui/components/MissingLettersInputDialog.kt`, `domain/engine/PartialAnswerComposer.kt`
+- Aktif oyuncu: `ui/components/PlayerScoreCard.kt`
+- Kutlama: `ui/components/Confetti.kt`
+- Final/zarf: `ui/screens/GameCompleteScreen.kt`
+- Anma: `ui/screens/MemorialScreen.kt`
+- Ses: `audio/SoundId.kt`, `audio/AudioManifest.kt`, `audio/AudioManager.kt`

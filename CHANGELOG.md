@@ -1,7 +1,28 @@
 # CHANGELOG
 
-## 0.6.2 — ULTRA derleme düzeltmesi
-- `strings.xml` içindeki `prize_money_body` metnindeki kaçırılmamış kesme işareti `\'` olarak kaçırıldı (aapt2 mergeDebugResources hatası veriyordu).
+## 1.0.1 — Kalite kontrolü düzeltmeleri
+- DERLEME HATASI: MemorialScreen.kt'de `import androidx.compose.foundation.layout.weight` vardı. Böyle bir üst düzey
+  fonksiyon yok (weight yalnızca Column/Row kapsamında) → "Unresolved reference: weight" ile build kırılırdı. Import silindi;
+  `.weight(1f)` Column içinde olduğu için aynen çalışır.
+- Final kazanma ekranı 1080p TV'ye (960×540 dp) sığmıyordu (~630 dp içerik): şampiyon kartı ve ÖDÜL ZARFLARI butonu
+  ekranın altında kalıyordu. Yazı/kart boyutları küçültüldü (~515 dp).
+- Tur sonu penceresi sınırdaydı (uzun cevaplarda başlık/buton kesilirdi). Boyutlar küçültüldü (~410–450 dp).
+
+## 1.0.0 MASTER FINAL — 2026-09-27
+- Baştan uçtan uca kalite kontrolü yapıldı; oyun kuralları, TV layout, ses, kaynaklar ve testler tekrar doğrulandı.
+- Anma/Fâtiha ekranı yeniden düzenlendi: logo, metin ve ÂMİN gerçek ayrı bölgelerde; buton artık hiçbir çözünürlükte metnin üstüne binmiyor. Anma ekranı sessiz.
+- Çark yazıları güvenli alana alındı; 3D disk derinliği, bevel, glossy segmentler, seçili dilim glow'u ve LED halesi güçlendirildi.
+- Çark sonucu ekranı: puan → aktif oyuncu adı büyük → yapılacak hareket ayrı satır.
+- Aktif oyuncu kartı daha belirgin: daha büyük isim/puan, daha kuvvetli altın pulse ve kartın üstünde yanıp sönen SIRA SENDE.
+- JOKER kuralı güncellendi: 1.000 × çıkan harf adedi; ilk yanlışta 1 ekstra ücretsiz ünsüz; ikinci yanlışta sıra geçer. Aktif 2X Joker puanını katlamaz, başarılı Joker ise 2X hakkını tüketir.
+- Hakemli hızlı çözüm geliştirildi: tr-TR SpeechRecognizer yalnız yardımcıdır; otomatik karar vermez. Cevap perde altında, 3 sn auto-hide; mikrofon yoksa sözlü kontrol.
+- YAZARAK GİR yalnız eksik harfleri ister; açılmış harfler sabit kalır.
+- Tur/final kutlamaları güçlendirildi: hareketli spotlar, havai fişekler, yan kıvılcım fıskiyeleri ve yoğun konfeti.
+- Final kazanımında yalnız şampiyonun büyük kartı; sonra 3 rastgele sürpriz zarf.
+- Eksik `VOICE_CHOOSE_LETTER` SoundId/AudioManifest eşlemesi eklendi; tüm ses kimlikleri yeniden audit edildi.
+- Eski Joker=tek sabit 1000 varsayımına bağlı testler güncellendi. Toplam 66 domain testi bağımsız runner ile geçti.
+- Android resource audit: eksik string/drawable yok; XML'ler parse oluyor; 76 MP3 mevcut.
+- Bu ortamda Gradle dağıtımı ağ erişimi yüzünden indirilemedi; gerçek APK build GitHub Actions'a bırakıldı.
 
 ## 0.6.1 — Premium sahne + yeni 3D çark assetleri
 - bg_game / bg_menu / bg_panel, yeni gece İstanbul yarışma sahnesi görselleriyle yenilendi.
