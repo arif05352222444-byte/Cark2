@@ -55,6 +55,12 @@ import kotlinx.coroutines.delay
 
 private const val AUTO_HIDE_MS = 3000L
 
+/** Hakem paneli ölçüleri. Ekranlar bu kadar alanı sağda boş bırakır → panel bulmacanın üstüne binmez. */
+val REFEREE_PANEL_WIDTH = 280.dp
+val REFEREE_PANEL_END = 24.dp
+/** Ekranın sağ kenarından itibaren panelin kapladığı genişlik + küçük boşluk. */
+val REFEREE_RESERVED_WIDTH = REFEREE_PANEL_WIDTH + REFEREE_PANEL_END + 12.dp
+
 /**
  * Hakemli hızlı çözüm — SADECE sağ altta küçük panel. Ana ekran ve bulmaca kararmadan görünür kalır.
  * Oyuncu cevabı yüksek sesle söyler; hakem TV'ye yaklaşır, CEVABI AÇ ile gizli cevaba bakar
@@ -106,8 +112,8 @@ fun RefereeSolveDialog(
         }
         Column(
             Modifier
-                .padding(end = 30.dp, bottom = 18.dp)
-                .width(262.dp)
+                .padding(end = REFEREE_PANEL_END, bottom = 16.dp)
+                .width(REFEREE_PANEL_WIDTH)
                 .neonPanel(16.dp, glow = true, borderColor = AppColors.Gold)
                 .padding(horizontal = 10.dp, vertical = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -167,14 +173,14 @@ fun RefereeSolveDialog(
                 fontSize = 15.sp,
                 corner = 10.dp,
             )
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 TvButton(
-                    stringResource(R.string.referee_correct), { decide(onCorrect) }, Modifier.width(117.dp),
-                    height = 38.dp, fontSize = 15.sp, corner = 10.dp, icon = GameIconKind.CHECK,
+                    stringResource(R.string.referee_correct), { decide(onCorrect) }, Modifier.weight(1f),
+                    height = 40.dp, fontSize = 16.sp, corner = 10.dp, icon = GameIconKind.CHECK, contentPadding = 8.dp,
                 )
                 TvButton(
-                    stringResource(R.string.referee_wrong), { decide(onWrong) }, Modifier.width(117.dp),
-                    height = 38.dp, fontSize = 15.sp, corner = 10.dp, icon = GameIconKind.PLAY,
+                    stringResource(R.string.referee_wrong), { decide(onWrong) }, Modifier.weight(1f),
+                    height = 40.dp, fontSize = 16.sp, corner = 10.dp, icon = GameIconKind.PLAY, contentPadding = 8.dp,
                 )
             }
             TvButton(

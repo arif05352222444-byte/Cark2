@@ -60,6 +60,7 @@ import com.ailecarki.tv.ui.components.PanelState
 import com.ailecarki.tv.ui.components.RequestFocus
 import com.ailecarki.tv.ui.components.TitleMarquee
 import com.ailecarki.tv.ui.components.TvButton
+import com.ailecarki.tv.ui.components.WHEEL_REST_ROTATION
 import com.ailecarki.tv.ui.components.WheelView
 import com.ailecarki.tv.ui.components.drawGamePanel
 import com.ailecarki.tv.ui.components.goldTextStyle
@@ -85,7 +86,7 @@ fun SettingsScreen(vm: SettingsViewModel, onBack: () -> Unit) {
     BoxWithConstraints(Modifier.fillMaxSize()) {
         val padV = maxHeight * 0.035f
         // Solda yarısı görünen dekoratif çark
-        WheelView(WheelConfig.DEFAULT, rotation = { -7.5f }, size = maxHeight * 0.52f, modifier = Modifier.offset(x = -(maxHeight * 0.26f), y = maxHeight * 0.3f))
+        WheelView(WheelConfig.DEFAULT, rotation = { WHEEL_REST_ROTATION }, size = maxHeight * 0.52f, modifier = Modifier.offset(x = -(maxHeight * 0.26f), y = maxHeight * 0.3f))
 
         Column(
             Modifier.fillMaxSize().padding(top = padV, bottom = padV),

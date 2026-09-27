@@ -56,7 +56,7 @@ import com.ailecarki.tv.ui.components.PanelState
 import com.ailecarki.tv.ui.components.TextInputDialog
 import com.ailecarki.tv.ui.components.TitleMarquee
 import com.ailecarki.tv.ui.components.TvButton
-import com.ailecarki.tv.ui.components.WheelPodium
+import com.ailecarki.tv.ui.components.WHEEL_REST_ROTATION
 import com.ailecarki.tv.ui.components.WheelView
 import com.ailecarki.tv.ui.components.drawGamePanel
 import com.ailecarki.tv.ui.components.goldTextStyle
@@ -97,10 +97,10 @@ fun PlayerSetupScreen(vm: GameViewModel, onBack: () -> Unit, onStarted: () -> Un
         val padV = h * 0.035f
 
         // Sol dekoratif çark
-        val wheel = h * 0.46f
-        Box(Modifier.offset(x = padH - 6.dp, y = h * 0.24f)) {
-            WheelPodium(wheel * 1.05f, Modifier.offset(x = -(wheel * 0.025f), y = wheel * 0.9f))
-            WheelView(WheelConfig.DEFAULT, rotation = { -7.5f }, size = wheel)
+        // Çark, arka plan görselindeki (bg_game) kaidenin üstüne oturur: kaide merkezi ~%16,7 x, üst yüzeyi ~%66,7 y.
+        val wheel = h * 0.445f
+        Box(Modifier.offset(x = w * 0.1667f - wheel / 2f, y = h * 0.667f - wheel + 4.dp)) {
+            WheelView(WheelConfig.DEFAULT, rotation = { WHEEL_REST_ROTATION }, size = wheel)
         }
 
         TitleMarquee(stringResource(R.string.title), Modifier.align(Alignment.TopCenter).padding(top = padV), fontSize = 36.sp)

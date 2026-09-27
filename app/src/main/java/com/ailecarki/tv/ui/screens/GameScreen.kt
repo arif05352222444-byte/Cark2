@@ -62,6 +62,7 @@ import com.ailecarki.tv.ui.components.RequestFocus
 import com.ailecarki.tv.ui.components.TextInputDialog
 import com.ailecarki.tv.ui.components.TitleMarquee
 import com.ailecarki.tv.ui.components.TvButton
+import com.ailecarki.tv.ui.components.WHEEL_REST_ROTATION
 import com.ailecarki.tv.ui.components.WheelView
 import com.ailecarki.tv.ui.components.goldTextStyle
 import com.ailecarki.tv.ui.components.revealDurationMs
@@ -70,6 +71,10 @@ import com.ailecarki.tv.ui.theme.Dimens
 import com.ailecarki.tv.ui.theme.formatScore
 import com.ailecarki.tv.ui.viewmodel.GameViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.distinctUntilChanged
+import androidx.compose.runtime.snapshotFlow
 import com.ailecarki.tv.ui.components.GameIcon
 import com.ailecarki.tv.ui.components.locativeName
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -95,7 +100,6 @@ import androidx.compose.ui.zIndex
 import com.ailecarki.tv.ui.components.GameIconKind
 import com.ailecarki.tv.ui.components.GoldText
 import com.ailecarki.tv.ui.components.SparkleBurst
-import com.ailecarki.tv.ui.components.WheelPodium
 import com.ailecarki.tv.ui.components.neonPanel
 import com.ailecarki.tv.ui.theme.GameFont
 
@@ -153,7 +157,7 @@ fun GameScreen(vm: GameViewModel, onExitToMenu: () -> Unit, onNewGame: () -> Uni
 @Composable
 private fun MainGameContent(s: GameState, vm: GameViewModel, refocusKey: Any?) {
     // Çarkın açısı turlar arasında korunur (çark kaldığı yerden döner).
-    val rotation = remember { Animatable(-7.5f) }
+    val rotation = remember { Animatable(WHEEL_REST_ROTATION) }
     var keyboardFocusNonce by remember { mutableIntStateOf(0) }
 
     // Yeni oyun: "ilk sıra kimde" çekilişi — kartlar arasında hızla dolaşan ışık, sonra seçilen oyuncu.
@@ -186,7 +190,22 @@ private fun MainGameContent(s: GameState, vm: GameViewModel, refocusKey: Any?) {
             rotation.snapTo(current)
             val target = vm.wheel.targetRotation(current, plan.targetIndex, plan.extraTurns, plan.jitter)
             delay(WHEEL_ENTER_MS)
+            // Dilim sınırı her geçildiğinde tık sesi (çok hızlıyken en fazla ~25/sn, sesler üst üste binmesin).
+            val ticker = launch {
+                var lastTick = 0L
+                snapshotFlow { vm.wheel.segmentIndexAt(rotation.value) }
+                    .distinctUntilChanged()
+                    .drop(1)
+                    .collect {
+                        val now = System.currentTimeMillis()
+                        if (now - lastTick >= 40L) {
+                            lastTick = now
+                            vm.wheelTick()
+                        }
+                    }
+            }
             rotation.animateTo(target, tween(plan.durationMs, easing = SpinEasing))
+            ticker.cancel()
             vm.onSpinFinished()
         }
     }
@@ -235,7 +254,14 @@ private fun MainGameContent(s: GameState, vm: GameViewModel, refocusKey: Any?) {
         val rightW = screenW * 0.22f
         val colTop = screenH * 0.2f
         val centerX = padH + leftW
-        val centerW = screenW - padH * 2 - leftW - rightW - 16.dp
+        val centerWNormal = screenW - padH * 2 - leftW - rightW - 16.dp
+        // Hakem paneli açıkken orta sütun panelin soluna sığacak kadar daralır (bulmaca panelin altına girmez).
+        val centerWReferee = min(centerWNormal, screenW - REFEREE_RESERVED_WIDTH - centerX)
+        val centerW by animateDpAsState(
+            if (s.phase == GamePhase.SOLVING) centerWReferee else centerWNormal,
+            tween(300),
+            label = "centerW",
+        )
 
         // Çark geometrisi: dinlenirken solda, çevirirken ekranın ortasında büyük.
         val wheelBase = 420.dp
@@ -247,11 +273,7 @@ private fun MainGameContent(s: GameState, vm: GameViewModel, refocusKey: Any?) {
         val midCx = screenW / 2f
         val midCy = screenH / 2f
 
-        // Kaide çarkın dinlenme yerinde sabit kalır.
-        WheelPodium(
-            restSize * 1.05f,
-            Modifier.offset(x = restCx - restSize * 0.525f, y = restCy + restSize * 0.4f),
-        )
+        // Kaide artık arka plan görselinde (bg_game) — çarkın dinlenme konumu onunla hizalı.
 
         TitleMarquee(
             stringResource(R.string.title),

@@ -31,6 +31,7 @@ import com.ailecarki.tv.ui.components.RequestFocus
 import com.ailecarki.tv.ui.components.TitleMarquee
 import com.ailecarki.tv.ui.components.TvButton
 import com.ailecarki.tv.ui.components.WheelPodium
+import com.ailecarki.tv.ui.components.WHEEL_REST_ROTATION
 import com.ailecarki.tv.ui.components.WheelView
 import com.ailecarki.tv.ui.theme.AppColors
 
@@ -47,18 +48,18 @@ fun HomeScreen(
     BoxWithConstraints(Modifier.fillMaxSize()) {
         val padH = maxWidth * 0.035f
         val padV = maxHeight * 0.035f
-        val wheel = (maxHeight * 0.70f)
+        val wheel = (maxHeight * 0.73f)
         // Sol: büyük dekoratif çark + kaide
         Box(Modifier.offset(x = padH - 8.dp, y = maxHeight * 0.16f)) {
-            WheelPodium(wheel * 1.05f, Modifier.offset(x = -(wheel * 0.025f), y = wheel * 0.9f))
-            WheelView(WheelConfig.DEFAULT, rotation = { -7.5f }, size = wheel)
+            WheelPodium(wheel * 1.15f, Modifier.offset(x = -(wheel * 0.075f), y = wheel * 0.84f))
+            WheelView(WheelConfig.DEFAULT, rotation = { WHEEL_REST_ROTATION }, size = wheel)
         }
         // Üst orta: logo + slogan
         Column(
             Modifier.align(Alignment.TopCenter).padding(top = padV),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            TitleMarquee(stringResource(R.string.title), fontSize = 56.sp)
+            TitleMarquee(stringResource(R.string.title), fontSize = 50.sp)
             Spacer(Modifier.height(10.dp))
             Text(
                 stringResource(R.string.slogan),

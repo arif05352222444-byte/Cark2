@@ -44,6 +44,11 @@ import com.ailecarki.tv.ui.theme.AppColors
 import com.ailecarki.tv.ui.theme.Dimens
 import com.ailecarki.tv.ui.viewmodel.GameViewModel
 import kotlinx.coroutines.delay
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
+import com.ailecarki.tv.domain.engine.TurkishAlphabet
+import com.ailecarki.tv.ui.components.goldTextStyle
+import com.ailecarki.tv.ui.components.FinalLettersBar
 
 @Composable
 fun FinalScreen(s: GameState, vm: GameViewModel, refocusKey: Any? = null) {
@@ -72,26 +77,33 @@ fun FinalScreen(s: GameState, vm: GameViewModel, refocusKey: Any? = null) {
         Text(stringResource(R.string.final_finalist, finalist.name), color = AppColors.GoldLight, fontSize = 24.sp, fontWeight = FontWeight.Black)
         Spacer(Modifier.height(6.dp))
         CategoryPill(s.puzzle.category)
+        // Hakem paneli açıkken alt bölüm sağda panel kadar boşluk bırakır (bulmaca/şerit panelin altına girmez).
+        val refereeOpen = s.phase == GamePhase.FINAL_SOLVING && showInput
+        val refereeInset by animateDpAsState(
+            if (refereeOpen) REFEREE_RESERVED_WIDTH - Dimens.SafeHorizontal else 0.dp,
+            tween(300),
+            label = "refereeInset",
+        )
+        Column(
+            Modifier.fillMaxWidth().weight(1f).padding(end = refereeInset),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
         key(s.puzzle.id) {
             PuzzleBoard(s.puzzle.answer, s.revealedLetters, Modifier.fillMaxWidth().weight(1f).padding(vertical = 10.dp))
         }
-        Text(
-            stringResource(R.string.final_given, vm.rules.finalGivenLetters.joinToString(" ")),
-            color = AppColors.TextMuted,
-            fontSize = 17.sp,
+        FinalLettersBar(
+            given = vm.rules.finalGivenLetters.toList(),
+            consonants = s.finalPicks.filter { TurkishAlphabet.isConsonant(it) },
+            vowels = s.finalPicks.filter { TurkishAlphabet.isVowel(it) },
+            consonantSlots = vm.rules.finalConsonantPicks,
+            vowelSlots = vm.rules.finalVowelPicks,
         )
         Spacer(Modifier.height(8.dp))
         when (s.phase) {
             GamePhase.FINAL_LETTER_SELECTION -> {
                 Text(
-                    stringResource(
-                        R.string.final_pick_status,
-                        vm.rules.finalConsonantPicks, vm.rules.finalVowelPicks,
-                        vm.finalConsonantsPicked(), vm.finalVowelsPicked(),
-                    ),
-                    color = AppColors.White,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
+                    stringResource(R.string.final_pick_hint, vm.rules.finalConsonantPicks, vm.rules.finalVowelPicks),
+                    style = goldTextStyle(20.sp),
                 )
                 Spacer(Modifier.height(8.dp))
                 LetterKeyboard(
@@ -110,6 +122,7 @@ fun FinalScreen(s: GameState, vm: GameViewModel, refocusKey: Any? = null) {
                 RequestFocus(answerBtn, showInput, refocusKey)
             }
             else -> Box(Modifier.height(120.dp))
+        }
         }
     }
 
