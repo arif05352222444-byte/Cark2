@@ -191,6 +191,9 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
     /** Çekiliş animasyonunda her adımda kısa tık sesi. */
     fun introTick() = audio.playEffect(SoundId.FX_TICK)
 
+    /** Çark dönerken dilim sınırı geçişinde tık (effect_wheel_tick). */
+    fun wheelTick() = audio.playEffect(SoundId.FX_TICK)
+
     fun finishStartIntro() {
         if (!_startIntro.value) return
         _startIntro.value = false
