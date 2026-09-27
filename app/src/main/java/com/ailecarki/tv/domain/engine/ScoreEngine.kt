@@ -7,7 +7,8 @@ object ScoreEngine {
     fun consonantPoints(wheelValue: Int, count: Int, multiplier: Int = 1): Int =
         wheelValue * count * multiplier
 
-    fun jokerPoints(count: Int, fixedPoints: Int): Int = if (count > 0) fixedPoints else 0
+    /** Joker, 1000 puanlık dilim gibi harf adediyle çarpılır. */
+    fun jokerPoints(count: Int, basePoints: Int): Int = if (count > 0) count * basePoints else 0
 
     fun canBuyVowel(score: Int, cost: Int): Boolean = score >= cost
 

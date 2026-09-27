@@ -83,7 +83,8 @@ class GameEngine(
         if (s.phase != GamePhase.WHEEL_RESULT) return s
         val segment = currentSegment(s) ?: return s
         return when (segment.type) {
-            SegmentType.POINTS, SegmentType.JOKER -> s.copy(phase = GamePhase.LETTER_SELECTION)
+            SegmentType.POINTS -> s.copy(phase = GamePhase.LETTER_SELECTION, jokerAttemptsRemaining = 0)
+            SegmentType.JOKER -> s.copy(phase = GamePhase.LETTER_SELECTION, jokerAttemptsRemaining = 2)
             SegmentType.BANKRUPT -> {
                 val players = s.players.updated(s.currentPlayerIndex) {
                     ScoreEngine.applyBankrupt(it, rules.bankruptPolicy)
@@ -91,7 +92,7 @@ class GameEngine(
                 advanceTurn(s.copy(players = players), GameEvent.Bankrupt)
             }
             SegmentType.LOSE_TURN -> advanceTurn(s, GameEvent.LoseTurn)
-            SegmentType.DOUBLE -> s.copy(phase = GamePhase.PLAYER_TURN, doubleActive = true)
+            SegmentType.DOUBLE -> s.copy(phase = GamePhase.PLAYER_TURN, doubleActive = true, jokerAttemptsRemaining = 0)
                 .withEvent(GameEvent.DoubleActivated)
         }
     }
@@ -103,11 +104,24 @@ class GameEngine(
         val segment = currentSegment(s) ?: return s
         val count = PuzzleEngine.letterCount(s.puzzle.answer, letter)
         val used = s.usedLetters + letter
-        if (count == 0) {
-            return advanceTurn(s.copy(usedLetters = used), GameEvent.LetterMissing(letter))
-        }
         val isJoker = segment.type == SegmentType.JOKER
+        if (count == 0) {
+            // Joker gerçek bir ikinci şans verir: ilk yanlışta aynı oyuncu ücretsiz bir ünsüz daha seçer.
+            if (isJoker && s.jokerAttemptsRemaining > 1) {
+                return s.copy(
+                    usedLetters = used,
+                    jokerAttemptsRemaining = s.jokerAttemptsRemaining - 1,
+                    phase = GamePhase.LETTER_SELECTION,
+                ).withEvent(GameEvent.JokerRetry(letter, s.jokerAttemptsRemaining - 1))
+            }
+            return advanceTurn(
+                s.copy(usedLetters = used, jokerAttemptsRemaining = 0),
+                GameEvent.LetterMissing(letter),
+            )
+        }
         val points = if (isJoker) {
+            // Joker = 1.000 x bulunan harf adedi. 2X Joker puanını katlamaz; fakat başarılı ünsüz
+            // seçimi olduğu için aktif 2X hakkını tüketir.
             ScoreEngine.jokerPoints(count, rules.jokerPoints)
         } else {
             val multiplier = if (s.doubleActive) rules.doubleMultiplier else 1
@@ -121,6 +135,7 @@ class GameEngine(
             // 2X, sonraki BAŞARILI ünsüz seçiminde tüketilir — Joker üzerinden olsa bile.
             // Joker puanı sabit kalır (2X ile katlanmaz).
             doubleActive = false,
+            jokerAttemptsRemaining = 0,
             phase = GamePhase.LETTER_REVEAL,
         ).withEvent(GameEvent.LetterFound(letter, count, points))
     }
@@ -202,6 +217,7 @@ class GameEngine(
             phase = GamePhase.ROUND_COMPLETE,
             roundWinnerIndex = winner,
             doubleActive = false,
+            jokerAttemptsRemaining = 0,
         )
         return if (event != null) next.withEvent(event) else next
     }
@@ -223,6 +239,7 @@ class GameEngine(
             lastRevealedLetter = null,
             spinSegmentIndex = null,
             doubleActive = false,
+            jokerAttemptsRemaining = 0,
             roundWinnerIndex = null,
             phase = GamePhase.PLAYER_TURN,
         )
@@ -250,6 +267,7 @@ class GameEngine(
             finalPicks = emptyList(),
             spinSegmentIndex = null,
             doubleActive = false,
+            jokerAttemptsRemaining = 0,
             roundWinnerIndex = null,
             phase = GamePhase.FINAL_LETTER_SELECTION,
         )
@@ -315,14 +333,20 @@ class GameEngine(
         // çark aşamasında kalmış oyunu güvenle "sıra sende, çarkı çevir" durumuna al.
         val wheelPhases = setOf(GamePhase.WHEEL_SPINNING, GamePhase.WHEEL_RESULT, GamePhase.LETTER_SELECTION)
         if (base.phase in wheelPhases && currentSegment(base) == null) {
-            return base.copy(phase = GamePhase.PLAYER_TURN, spinSegmentIndex = null)
+            return base.copy(phase = GamePhase.PLAYER_TURN, spinSegmentIndex = null, jokerAttemptsRemaining = 0)
         }
-        return when (base.phase) {
-            GamePhase.WHEEL_SPINNING -> base.copy(phase = GamePhase.WHEEL_RESULT)
-            GamePhase.LETTER_REVEAL -> finishReveal(base)
-            GamePhase.FINAL_REVEAL -> finishFinalReveal(base)
-            GamePhase.SOLVING, GamePhase.VOWEL_SELECTION -> base.copy(phase = GamePhase.PLAYER_ACTION)
-            else -> base
+        // Eski kayıtta Joker seçim fazı varsa ama yeni retry alanı yoksa iki hakkı güvenle yeniden kur.
+        val normalized = if (
+            base.phase == GamePhase.LETTER_SELECTION &&
+            currentSegment(base)?.type == SegmentType.JOKER &&
+            base.jokerAttemptsRemaining <= 0
+        ) base.copy(jokerAttemptsRemaining = 2) else base
+        return when (normalized.phase) {
+            GamePhase.WHEEL_SPINNING -> normalized.copy(phase = GamePhase.WHEEL_RESULT)
+            GamePhase.LETTER_REVEAL -> finishReveal(normalized)
+            GamePhase.FINAL_REVEAL -> finishFinalReveal(normalized)
+            GamePhase.SOLVING, GamePhase.VOWEL_SELECTION -> normalized.copy(phase = GamePhase.PLAYER_ACTION)
+            else -> normalized
         }
     }
 
@@ -332,6 +356,7 @@ class GameEngine(
         currentPlayerIndex = (s.currentPlayerIndex + 1) % s.players.size,
         phase = GamePhase.PLAYER_TURN,
         doubleActive = false,
+        jokerAttemptsRemaining = 0,
         spinSegmentIndex = null,
     ).withEvent(event)
 
