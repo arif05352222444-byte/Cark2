@@ -9,6 +9,7 @@ import com.ailecarki.tv.domain.model.GamePhase
 import com.ailecarki.tv.domain.model.GameState
 import com.ailecarki.tv.domain.model.Player
 import com.ailecarki.tv.domain.model.Puzzle
+import com.ailecarki.tv.domain.rules.WheelConfig
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -41,6 +42,8 @@ data class SavedGame(
     val finalistIndex: Int? = null,
     val finalPicks: String = "",
     val finalWon: Boolean? = null,
+    /** Kaydedildiği andaki çark dilim sayısı (eski kayıtlar 24 dilimli çarktan). */
+    val wheelSize: Int = 24,
 )
 
 /** Aktif oyunu JSON olarak DataStore'a yazar; DEVAM ET buradan çalışır. */
@@ -87,6 +90,7 @@ class SavedGameRepository(private val store: DataStore<Preferences>) {
         finalistIndex = finalistIndex,
         finalPicks = finalPicks.joinToString(""),
         finalWon = finalWon,
+        wheelSize = WheelConfig.DEFAULT.size,
     )
 
     private fun SavedGame.toState() = GameState(
@@ -99,7 +103,8 @@ class SavedGameRepository(private val store: DataStore<Preferences>) {
         revealedLetters = revealed.toSet(),
         usedLetters = used.toSet(),
         phase = GamePhase.valueOf(phase),
-        spinSegmentIndex = spinSegmentIndex,
+        // Çark değiştiyse eski dilim numarası anlamsız → sıfırla (GameEngine.sanitizeForResume toparlar).
+        spinSegmentIndex = if (wheelSize == WheelConfig.DEFAULT.size) spinSegmentIndex else null,
         spinCount = spinCount,
         doubleActive = doubleActive,
         roundWinnerIndex = roundWinnerIndex,
