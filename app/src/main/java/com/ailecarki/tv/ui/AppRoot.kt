@@ -21,12 +21,13 @@ import com.ailecarki.tv.ui.components.SceneBackground
 import com.ailecarki.tv.R
 import com.ailecarki.tv.ui.screens.GameScreen
 import com.ailecarki.tv.ui.screens.HomeScreen
+import com.ailecarki.tv.ui.screens.MemorialScreen
 import com.ailecarki.tv.ui.screens.PlayerSetupScreen
 import com.ailecarki.tv.ui.screens.SettingsScreen
 import com.ailecarki.tv.ui.viewmodel.GameViewModel
 import com.ailecarki.tv.ui.viewmodel.SettingsViewModel
 
-enum class Screen { HOME, SETUP, GAME, SETTINGS }
+enum class Screen { MEMORIAL, HOME, SETUP, GAME, SETTINGS }
 
 @Composable
 fun AppRoot(onExit: () -> Unit) {
@@ -34,7 +35,7 @@ fun AppRoot(onExit: () -> Unit) {
     val container = remember { (context.applicationContext as AileCarkiApp).container }
     val gameVm: GameViewModel = viewModel()
     val settingsVm: SettingsViewModel = viewModel()
-    var screen by rememberSaveable { mutableStateOf(Screen.HOME) }
+    var screen by rememberSaveable { mutableStateOf(Screen.MEMORIAL) }
     val game by gameVm.state.collectAsStateWithLifecycle()
     val hasSaved by gameVm.hasSavedGame.collectAsStateWithLifecycle()
     val sound: (SoundId) -> Unit = remember { { id -> container.audio.play(id) } }
@@ -42,13 +43,18 @@ fun AppRoot(onExit: () -> Unit) {
     // Müzik ekrana göre değişir.
     val isFinal = game?.isFinal == true
     LaunchedEffect(screen, isFinal) {
-        container.audio.playMusic(
-            when {
-                screen != Screen.GAME -> SoundId.MUSIC_MENU
-                isFinal -> SoundId.MUSIC_FINAL
-                else -> SoundId.MUSIC_GAME
-            },
-        )
+        if (screen == Screen.MEMORIAL) {
+            // Anma ekranı bilerek sessiz: seslendirme ve yarışma müziği yok.
+            container.audio.stopMusic()
+        } else {
+            container.audio.playMusic(
+                when {
+                    screen != Screen.GAME -> SoundId.MUSIC_MENU
+                    isFinal -> SoundId.MUSIC_FINAL
+                    else -> SoundId.MUSIC_GAME
+                },
+            )
+        }
     }
     // Süreç yeniden başlatıldıysa ve oyun state'i yoksa ana menüye dön.
     LaunchedEffect(screen, game) {
@@ -59,6 +65,7 @@ fun AppRoot(onExit: () -> Unit) {
         Box(Modifier.fillMaxSize()) {
             // Sahne görseli ekrana göre: menü / oyuncu kurulumu / oyun / final (yumuşak geçişli)
             val bg = when {
+                screen == Screen.MEMORIAL -> R.drawable.bg_panel
                 screen == Screen.SETUP -> R.drawable.bg_game
                 screen == Screen.GAME && game != null && !isFinal -> R.drawable.bg_game
                 screen == Screen.GAME && isFinal -> R.drawable.bg_panel
@@ -67,6 +74,7 @@ fun AppRoot(onExit: () -> Unit) {
             }
             SceneBackground(bg)
             when (screen) {
+                Screen.MEMORIAL -> MemorialScreen(onAmen = { screen = Screen.HOME })
                 Screen.HOME -> HomeScreen(
                     hasSavedGame = hasSaved,
                     onNewGame = { screen = Screen.SETUP },
