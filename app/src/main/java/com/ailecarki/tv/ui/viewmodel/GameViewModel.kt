@@ -289,6 +289,11 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
                 audio.playEffect(SoundId.FX_LETTER_WRONG)
                 audio.playVoice(SoundId.VOICE_LETTER_MISSING, interrupt = true)
             }
+            is GameEvent.JokerRetry -> {
+                audio.playEffect(SoundId.FX_LETTER_WRONG)
+                audio.playVoice(SoundId.VOICE_LETTER_MISSING, interrupt = true)
+                audio.playVoice(SoundId.VOICE_CHOOSE_LETTER)
+            }
             // İflas / sıra geç / 2X sesleri çark durduğu anda çalındı (announceWheelResult).
             GameEvent.Bankrupt, GameEvent.LoseTurn, GameEvent.DoubleActivated -> Unit
             is GameEvent.CorrectAnswer -> {
