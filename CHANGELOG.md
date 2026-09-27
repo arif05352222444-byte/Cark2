@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.6.2 — ULTRA derleme düzeltmesi
+- `strings.xml` içindeki `prize_money_body` metnindeki kaçırılmamış kesme işareti `\'` olarak kaçırıldı (aapt2 mergeDebugResources hatası veriyordu).
+
 ## 0.6.1 — Premium sahne + yeni 3D çark assetleri
 - bg_game / bg_menu / bg_panel, yeni gece İstanbul yarışma sahnesi görselleriyle yenilendi.
 - AİLE ÇARKI logosu yeni 3D altın marquee assetiyle değiştirildi.
