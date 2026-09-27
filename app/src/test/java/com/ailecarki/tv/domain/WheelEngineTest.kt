@@ -11,8 +11,13 @@ class WheelEngineTest {
     private val wheel = WheelEngine(WheelConfig.DEFAULT, Random(42))
 
     @Test
-    fun defaultWheelHasBalancedSegmentCount() {
-        assertTrue(WheelConfig.DEFAULT.size in 20..24)
+    fun defaultWheelHasTwelveBigSegmentsWithAllTypes() {
+        val w = WheelConfig.DEFAULT
+        assertEquals(12, w.size)
+        val types = w.map { it.type }.toSet()
+        assertEquals(com.ailecarki.tv.domain.model.SegmentType.entries.toSet(), types)
+        val values = w.filter { it.type == com.ailecarki.tv.domain.model.SegmentType.POINTS }.map { it.value }.sorted()
+        assertEquals(listOf(100, 250, 300, 400, 500, 750, 1000, 2000), values)
     }
 
     @Test

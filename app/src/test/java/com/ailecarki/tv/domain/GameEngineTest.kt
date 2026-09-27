@@ -288,4 +288,16 @@ class GameEngineTest {
         assertEquals(false, e.confirmFinal(s, false).finalWon)
         assertEquals(GamePhase.GAME_COMPLETE, e.confirmFinal(s, false).phase)
     }
+
+    @Test fun resumeWithStaleWheelIndexGoesBackToPlayerTurn() {
+        val e = TestFixtures.engine(TestFixtures.points(500))
+        for (phase in listOf(GamePhase.WHEEL_SPINNING, GamePhase.WHEEL_RESULT, GamePhase.LETTER_SELECTION)) {
+            val stale = TestFixtures.state().copy(phase = phase, spinSegmentIndex = 17)
+            val r = e.sanitizeForResume(stale)
+            assertEquals(GamePhase.PLAYER_TURN, r.phase)
+            assertEquals(null, r.spinSegmentIndex)
+            val lost = TestFixtures.state().copy(phase = phase, spinSegmentIndex = null)
+            assertEquals(GamePhase.PLAYER_TURN, e.sanitizeForResume(lost).phase)
+        }
+    }
 }
