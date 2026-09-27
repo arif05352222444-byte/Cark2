@@ -60,10 +60,10 @@ class GameEngineTest {
         assertFalse(s.doubleActive)
     }
 
-    @Test fun jokerGivesFixedPoints() {
+    @Test fun jokerScoresBasePointsTimesOccurrenceCount() {
         val e = TestFixtures.engine(TestFixtures.special(SegmentType.JOKER))
         val s = e.chooseConsonant(e.spinAndResolve(TestFixtures.state()), 'S')
-        assertEquals(1000, s.players[0].score)
+        assertEquals(3000, s.players[0].score)
     }
 
     @Test fun buyingVowelCosts250AndKeepsTurn() {
@@ -168,13 +168,13 @@ class GameEngineTest {
         assertEquals(GamePhase.WHEEL_RESULT, e.sanitizeForResume(spinning).phase)
     }
 
-    @Test fun doubleThenJokerConsumesDoubleButKeepsFixedJokerPoints() {
+    @Test fun doubleThenJokerConsumesDoubleButDoesNotDoubleJokerScore() {
         val e2x = TestFixtures.engine(TestFixtures.special(SegmentType.DOUBLE))
         var s = e2x.spinAndResolve(TestFixtures.state())
         assertTrue(s.doubleActive)
         val joker = TestFixtures.engine(TestFixtures.special(SegmentType.JOKER))
         s = joker.chooseConsonant(joker.spinAndResolve(s), 'S')
-        assertEquals(1000, s.players[0].score) // 2000 değil
+        assertEquals(3000, s.players[0].score) // 1000 x 3 S; 2X Joker puanını ayrıca katlamaz
         assertFalse(s.doubleActive)            // 2X tüketildi
         // Sonraki normal harf artık 2X almaz
         val e500 = TestFixtures.engine(TestFixtures.points(500))
@@ -186,10 +186,10 @@ class GameEngineTest {
         assertEquals(before + 1000, s.players[0].score) // 500 x 2 harf, çarpansız
     }
 
-    @Test fun jokerWithoutDoubleIsFixed1000() {
+    @Test fun jokerWithoutDoubleUses1000PerOccurrence() {
         val e = TestFixtures.engine(TestFixtures.special(SegmentType.JOKER))
         val s = e.chooseConsonant(e.spinAndResolve(TestFixtures.state()), 'S') // 3 adet S
-        assertEquals(1000, s.players[0].score)
+        assertEquals(3000, s.players[0].score)
     }
 
     @Test fun wrongLetterAfterDoubleClearsDoubleAndPassesTurn() {
