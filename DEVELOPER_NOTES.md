@@ -13,14 +13,14 @@ ilk derleme GitHub Actions üzerinde yapılacak. İlk CI derlemesinde küçük d
 - [x] WheelEngine: sonuç önceden seçilir, animasyon hedef açısı matematiksel hesaplanır (testli)
 - [x] Türkçe normalizasyon (İSTANBUL = istanbul) + Türkçe karaktersiz klavye toleransı
 - [x] 156 soruluk offline kelime bankası, oturumda tekrar yok
-- [x] Ana menü, oyuncu ekranı (2–6 oyuncu, rastgele isim, boş/tekrar isim uyarısı), ayarlar
-- [x] Oyun ekranı: büyük çark YOK; çark sadece çevirirken overlay olarak gelir
+- [x] Ana menü, oyuncu ekranı (2/3/4 oyuncu seçimi, rastgele isim, boş/tekrar isim uyarısı), ayarlar
+- [x] Oyun ekranı: çark solda dinlenir; çevirirken büyüyerek merkeze gelir, durunca tekrar yerine döner
 - [x] Alttan kayan 29 harfli kartela, harflerin tek tek açılması, olay bannerları, konfeti
 - [x] Final ekranı (geri sayım) ve oyun sonu ekranı
 - [x] AudioManager (VOICE/EFFECT/MUSIC/UI, ducking, dosya yoksa sessiz)
 - [x] DynamicSpeechService + Mock
 - [x] Ayarlar ve kayıtlı oyun DataStore'da
-- [x] Unit testler (48): WheelEngine (çizim↔pointer, wrap-around), ScoreEngine, PuzzleEngine, normalizasyon, GameEngine (2X+Joker dahil)
+- [x] Unit testler (güncel kaynakta 57 senaryo): WheelEngine (çizim↔pointer, wrap-around), ScoreEngine, PuzzleEngine, normalizasyon, GameEngine (2X+Joker dahil)
 - [x] Merkezi ses eşleme: audio/AudioManifest.kt (bkz. AUDIO_INTEGRATION.md)
 
 ## KNOWN ISSUES
@@ -33,7 +33,7 @@ ilk derleme GitHub Actions üzerinde yapılacak. İlk CI derlemesinde küçük d
 ## TODO
 - [ ] İlk GitHub Actions derlemesi ve varsa derleme hatalarının düzeltilmesi
 - [ ] Gerçek TV / TV Box üzerinde kumanda testi
-- [ ] AileCarki_AudioPack_v1 ses dosyalarının eklenmesi (`assets/audio/README.txt`)
+- [ ] Ses paketi entegre; gerçek TV’de ses dengesi / senkron kontrolü
 - [ ] ElevenLabsDynamicSpeechService (backend/proxy üzerinden)
 - [ ] Kelime bankasını büyütmek
 - [ ] İsteğe bağlı: androidx.tv:tv-material bileşenlerine geçiş

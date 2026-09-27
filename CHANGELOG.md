@@ -1,5 +1,51 @@
 # CHANGELOG
 
+## 0.6.1 — Premium sahne + yeni 3D çark assetleri
+- bg_game / bg_menu / bg_panel, yeni gece İstanbul yarışma sahnesi görselleriyle yenilendi.
+- AİLE ÇARKI logosu yeni 3D altın marquee assetiyle değiştirildi.
+- wheel_frame / wheel_hub / wheel_pointer / podium yeni yüksek detaylı şeffaf assetlerle yenilendi.
+- 12 dilimli WheelEngine/WheelConfig yapısı aynen korundu; sadece görsel katman cilalandı.
+- Çark göbeği büyütüldü, yeni geniş ibrenin oranı assetin gerçek en-boy oranından okunuyor.
+- Segment ayırıcıları inceltildi, seçili dilim glow/pulse efekti güçlendirildi; frame glow aşırı patlamayacak şekilde dengelendi.
+- Menü çarkı hafif büyütüldü; ayarlar ve final için bg_panel kullanılıyor.
+- Android build bu çalışma ortamında doğrulanamadı: Gradle dağıtımı ağ erişimi olmadığı için indirilemedi.
+
+## 0.6.0 — Görsel paket (AileCarki_ArtPack_v1) + 12 dilimli çark
+- Çark 24 ince dilimden 12 büyük dilime indi (her biri 30°), WheelConfig.DEFAULT:
+  100 · 500 · 2X · 300 · 1000 · JOKER · 400 · 750 · İFLAS · 250 · 2000 · SIRA GEÇ (özel dilimler her 3 dilimde bir).
+  İFLAS ve SIRA GEÇ olasılığı aynı kaldı (1/12). WheelEngine matematiği değişmedi; ekrandaki dilimler aynı listeden çizilir.
+- Çark yazıları büyük ve kalın (Paytone One), "SIRA GEÇ" tek satır (iki satırda yan dilime taşıyordu); dinlenme konumunda sol yarıdaki yazılar ters durmasın
+  diye çevrilir. Dilim sınırları net altın çizgi.
+- Çarkın sabit parçaları artık görsel: altın çerçeve + ampuller (wheel_frame, yavaşça parlayıp söner), altın yıldızlı göbek
+  (wheel_hub), altın ibre (wheel_pointer), kaide (podium).
+- Arka planlar görsel: ana menü / ayarlar / final → bg_menu, oyuncu kurulumu + oyun → bg_game (çark kaidesi görselde,
+  çarkın dinlenme konumu kaideyle hizalı). Ekran değişince yumuşak geçiş. Kodla çizilen StageBackground artık kullanılmıyor.
+- "AİLE ÇARKI" başlığı görsel logo (logo_aile_carki) + nefes alan altın hale ve parlayıp sönen ampuller. "FİNAL" başlığı kodla.
+- TV launcher banner ve uygulama ikonu yeni görsellerden üretildi.
+- Eski kayıtlar: 24 dilimli çarkla kaydedilmiş, çark aşamasında kalmış oyun "sıra sende, çarkı çevir" durumuna döner
+  (SavedGame.wheelSize + GameEngine.sanitizeForResume). Test eklendi (57/57).
+- Görseller res/drawable-nodpi altında WebP (toplam ~630 KB). Kaynak PNG'ler kullanıcının ChatGPT ile ürettiği ArtPack'ten.
+
+## 0.5.3 — Hakem paneli bulmacanın üstüne binmiyor (TV geri bildirimi)
+- Hakem paneli açıkken ekranlar sağda panel kadar alan boşaltıyor (REFEREE_RESERVED_WIDTH):
+  final ekranında bulmaca + harf şeridi + süre/CEVABI SÖYLE sola kayıp küçülüyor; normal turda orta sütun daralıyor.
+  Harf kutuları otomatik ölçeklendiği için uzun cevaplar da panelin altına girmiyor. Geçiş 300 ms animasyonlu.
+- Hakem paneli 262 → 280dp; TAMAM / DEVAM butonları eşit genişlikte, daha az iç boşluk → yazılar artık kesilmiyor
+  (TV'de "TAMA" / "DEVA" görünüyordu). TvButton'a isteğe bağlı contentPadding eklendi (varsayılan aynı).
+
+## 0.5.2 — Final ekranında harf bilgisi belirginleştirildi (TV geri bildirimi)
+- Silik "Verilen harfler: R S T L N E" yazısı yerine altın çerçeveli bilgi şeridi (ui/components/FinalLettersBar.kt):
+  VERİLEN HARFLER → harf kartelası gibi altın kutucuklar; SENİN HARFLERİN → 3 ünsüz + 1 sesli yuvası
+  (boşken kesik çizgili "?", seçildikçe altın kutu ve harf). Çözüm sırasında da görünür kalır.
+- "3 ÜNSÜZ + 1 SESLİ SEÇ (ünsüz 0/3 · sesli 0/1)" yerine altın yazıyla "3 ÜNSÜZ + 1 SESLİ HARF SEÇ".
+- Değişen dosyalar: FinalScreen.kt, yeni FinalLettersBar.kt, strings.xml. Oyun motoru aynı.
+
+## 0.5.1 — Sıra göstergesi belirginleştirildi (TV geri bildirimi)
+- Sıradaki oyuncunun kartı: kalın altın çerçeve, yavaşça yanıp söner (kalınlık 5→8dp ve parlaklık nabız gibi, ~0,75 sn),
+  dış altın hale de onunla birlikte parlayıp söner. Animasyon sadece çizimde okunur (recomposition yok).
+- Oyuncu kartları artık sabit genişlikte (en fazla 230dp) ve ortalı: 2 oyuncuda kartlar ekranı boydan boya kaplamıyor.
+- Sadece ui/components/PlayerScoreCard.kt değişti. Oyun motoru, sesler, hakem paneli aynı.
+
 ## 0.5.0 — Hakem paneli son hali + TV rötuşları
 - Hakem paneli artık SADECE sağ altta küçük pencere (ekranın ~%10'u). Ana ekran kararmıyor, bulmaca görünür kalıyor.
   İçerik: HAKEM + oyuncu (+ finalde süre), DOĞRU CEVAP perdesi, CEVABI AÇ/GİZLE, TAMAM / DEVAM, küçük YAZARAK GİR.
