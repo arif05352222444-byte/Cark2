@@ -57,3 +57,11 @@ Projeyi GitHub'a yükle, Actions'tan APK'yı al, TV'de dene. Derleme hatası olu
 - Odak: disabled buton/harfler odaklanabilir kalır ama çalışmaz; faz değişince odak otomatik verilir.
 - Diyaloglar ayrı pencere (`Dialog`) → odak arkadaki butonlara kaçmaz.
 - Loglar: `adb logcat -s AileCarki/State AileCarki/Audio AileCarki/Puzzles`
+
+### ULTRA visual polish
+- Active turn: `PlayerScoreCard.kt` now renders a pulsing `SIRA SENDE` pill directly above the active player's card.
+- Wheel result/letter selection: active player's name is included in the large prompt.
+- Wheel labels use a tighter safe-radius band and smaller adaptive sizes to avoid rim clipping.
+- Wheel depth/LED intensity increased without changing WheelEngine math.
+- Round and final win scenes use lightweight Canvas fireworks/fountains + finite confetti; no video or heavy particle engine.
+- Final win intentionally shows only the champion's score card.

@@ -9,7 +9,6 @@
 - Segment ayırıcıları inceltildi, seçili dilim glow/pulse efekti güçlendirildi; frame glow aşırı patlamayacak şekilde dengelendi.
 - Menü çarkı hafif büyütüldü; ayarlar ve final için bg_panel kullanılıyor.
 - Android build bu çalışma ortamında doğrulanamadı: Gradle dağıtımı ağ erişimi olmadığı için indirilemedi.
-- Derleme düzeltmesi: SceneBackground.kt içindeki `Image(painter = ...)` çağrısından `filterQuality` parametresi kaldırıldı (painter overload'ı bu parametreyi kabul etmiyor, compileDebugKotlin hatası veriyordu).
 
 ## 0.6.0 — Görsel paket (AileCarki_ArtPack_v1) + 12 dilimli çark
 - Çark 24 ince dilimden 12 büyük dilime indi (her biri 30°), WheelConfig.DEFAULT:
@@ -121,3 +120,27 @@
 
 ## 0.1.0 — İlk sürüm
 - Proje, oyun motoru, tüm ekranlar, 156 soruluk kelime bankası, ses altyapısı, 38 unit test.
+
+## ULTRA TV polish — active turn + celebration + wheel depth
+- Çark yazıları güvenli halkaya alındı; dış çember/merkez göbek tarafından yenme riski azaltıldı.
+- Çark segmentlerine daha güçlü 3D gradient, iç metal halkalar, seçili dilim glow'u ve daha belirgin LED halesi eklendi.
+- Aktif oyuncu kartına kartın ÜSTÜNDE yanıp sönen `SIRA SENDE` etiketi eklendi; aktif isim ve puan büyütüldü.
+- Çark puanı sonrası bilgi paneli artık aktif oyuncuyu büyük puntoda gösteriyor (`HALA HARF SEÇ`).
+- Tur sonu ekranı tam kutlama sahnesine çevrildi: hareketli konfeti, havai fişek ve iki yan kıvılcım fıskiyesi; kazanan tek ve büyük kartla öne çıkarılıyor.
+- Büyük final kazanma ekranı daha özel hale getirildi: `ŞAMPİYON <isim>` marquee paneli, yalnızca kazananın büyük puan kartı, sürekli hareketli kutlama efektleri.
+- `SceneBackground` üzerindeki uyumsuz `filterQuality` parametresi kaldırıldı (Compose painter Image build uyumluluğu).
+
+## 2026-09-27 — Sürpriz zarf + eksik harfli çözüm
+- Büyük final kazanıldıktan sonra `ÖDÜL ZARFLARI` aşaması eklendi.
+- Her oyunda üç ödül üç zarfa rastgele dağıtılıyor: Dilek Hakkı, Ceza Hakkı, 1.000 TL Ödül ev kuralı.
+- Zarf ekranı TV kumandasıyla tam odak/OK desteğine sahip ve seçilen zarf kutlama efektiyle açılıyor.
+- `YAZARAK GİR` artık cevabı baştan istemiyor: daha önce açılmış harfler sabit geliyor, yalnızca kapalı kutular dolduruluyor.
+- Aynı eksik-harf sistemi normal tur çözümünde ve final çözümünde kullanılıyor.
+- `PartialAnswerComposer` ve unit testleri eklendi.
+
+## 2026-09-27 — Sessiz Fâtiha / anma açılışı
+- Uygulama artık her yeni açılışta ana menüden önce özel aile anma ekranını gösterir.
+- Metin, başta kıymetli babamız Muammer Uğurluel olmak üzere ebediyete uğurlanan aile büyüklerini sevgi, özlem ve rahmetle anar.
+- Ekranda otomatik seslendirme ve yarışma müziği bilinçli olarak yoktur; aile Fâtiha'sını okuduktan sonra yalnızca `ÂMİN` butonuna basar.
+- `ÂMİN` varsayılan odaktır ve basıldığında ana menüye geçilir; normal Aile Çarkı müziği bundan sonra başlar.
+- Anma ekranı oyun içi state, kayıt, skor, zarf ödülleri, hakem sistemi ve ses paketine dokunmaz.
